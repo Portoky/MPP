@@ -1,0 +1,8 @@
+D:\Universitate\University-projects\Semester4\MPP\Labs\Lab02\Lab02\obj\Debug\Lab02.csproj.AssemblyReference.cache
+D:\Universitate\University-projects\Semester4\MPP\Labs\Lab02\Lab02\obj\Debug\Lab02.csproj.SuggestedBindingRedirects.cache
+D:\Universitate\University-projects\Semester4\MPP\Labs\Lab02\Lab02\obj\Debug\Lab02.csproj.CoreCompileInputs.cache
+D:\Universitate\University-projects\Semester4\MPP\Labs\Lab02\Lab02\bin\Debug\Lab02.exe.config
+D:\Universitate\University-projects\Semester4\MPP\Labs\Lab02\Lab02\bin\Debug\Lab02.exe
+D:\Universitate\University-projects\Semester4\MPP\Labs\Lab02\Lab02\bin\Debug\Lab02.pdb
+D:\Universitate\University-projects\Semester4\MPP\Labs\Lab02\Lab02\obj\Debug\Lab02.exe
+D:\Universitate\University-projects\Semester4\MPP\Labs\Lab02\Lab02\obj\Debug\Lab02.pdb

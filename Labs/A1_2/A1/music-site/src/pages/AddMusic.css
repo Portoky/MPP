@@ -1,0 +1,8 @@
+.input {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-item {
+  vertical-align: middle;
+}
