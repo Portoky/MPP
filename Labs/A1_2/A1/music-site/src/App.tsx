@@ -6,11 +6,16 @@ import EditMusic from "./pages/EditMusic";
 import ViewMusic from "./pages/ViewMusic";
 import { createMusic } from "./utils/Utils";
 import Diagram from "./pages/Diagram";
+
 const App = () => {
   const [musics, setMusics] = useState([
     createMusic("Rocky Racoon", "The Beatles", 5, 1966),
     createMusic("Nowhere Man", "The Beatles", 4, 1965),
     createMusic("Let It Be", "The Beatles", 4, 1970),
+    createMusic("The Adults Are Talking", "The Strokes", 3, 2020),
+    createMusic("Végül", "Pocsai Eszter", 5, 2022),
+    createMusic("Sisi", "Sistematic", 2, 2022),
+    createMusic("Krúbi", "Copfocska", 5, 2021),
   ]);
 
   return (
@@ -18,7 +23,7 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route
-            path="/"
+            path="/" /*id show the which elements to show */
             element={<Home musics={musics} setMusics={setMusics}></Home>}
           />
           <Route

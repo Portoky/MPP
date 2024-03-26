@@ -15,3 +15,5 @@ export const createMusic = (
   const serialId = getAndIncrementGuid();
   return { serialId, title, artist, rating, yearOfRelease };
 };
+
+export const elementsByPage = 5;

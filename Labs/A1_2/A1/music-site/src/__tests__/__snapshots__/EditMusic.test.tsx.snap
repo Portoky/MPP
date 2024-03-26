@@ -1,0 +1,574 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Edit > renders 1`] = `
+{
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <h2>
+        Edit music information with serialNumber -&gt; 
+        1
+      </h2>
+      <div
+        class="input"
+        style="margin-left: 15px;"
+      >
+        <div
+          class="input-item"
+        >
+          <label>
+            Artist: 
+          </label>
+           
+          <br />
+          <input
+            id="artist"
+            name="artist"
+            type="text"
+            value="The Beatles"
+          />
+        </div>
+        <br />
+        <div
+          class="input-item"
+        >
+          <label>
+            Title: 
+          </label>
+           
+          <br />
+          <input
+            id="title"
+            name="title"
+            type="text"
+            value="Nowhere Man"
+          />
+        </div>
+        <br />
+        <div
+          class="input-item"
+        >
+          <label>
+            Rating: 
+          </label>
+           
+          <br />
+          <span
+            class="MuiRating-root MuiRating-sizeMedium css-1qqgbpl-MuiRating-root"
+          >
+            <label
+              class="css-dqr9h-MuiRating-label"
+              for=":r1:"
+            >
+              <span
+                class="MuiRating-icon MuiRating-iconFilled css-7qmtgc-MuiRating-icon"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-1vooibu-MuiSvgIcon-root"
+                  data-testid="StarIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiRating-visuallyHidden"
+              >
+                1 Star
+              </span>
+            </label>
+            <input
+              class="MuiRating-visuallyHidden"
+              id=":r1:"
+              name="rating"
+              type="radio"
+              value="1"
+            />
+            <label
+              class="css-dqr9h-MuiRating-label"
+              for=":r2:"
+            >
+              <span
+                class="MuiRating-icon MuiRating-iconFilled css-7qmtgc-MuiRating-icon"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-1vooibu-MuiSvgIcon-root"
+                  data-testid="StarIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiRating-visuallyHidden"
+              >
+                2 Stars
+              </span>
+            </label>
+            <input
+              class="MuiRating-visuallyHidden"
+              id=":r2:"
+              name="rating"
+              type="radio"
+              value="2"
+            />
+            <label
+              class="css-dqr9h-MuiRating-label"
+              for=":r3:"
+            >
+              <span
+                class="MuiRating-icon MuiRating-iconFilled css-7qmtgc-MuiRating-icon"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-1vooibu-MuiSvgIcon-root"
+                  data-testid="StarIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiRating-visuallyHidden"
+              >
+                3 Stars
+              </span>
+            </label>
+            <input
+              class="MuiRating-visuallyHidden"
+              id=":r3:"
+              name="rating"
+              type="radio"
+              value="3"
+            />
+            <label
+              class="css-dqr9h-MuiRating-label"
+              for=":r4:"
+            >
+              <span
+                class="MuiRating-icon MuiRating-iconFilled css-7qmtgc-MuiRating-icon"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-1vooibu-MuiSvgIcon-root"
+                  data-testid="StarIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiRating-visuallyHidden"
+              >
+                4 Stars
+              </span>
+            </label>
+            <input
+              checked=""
+              class="MuiRating-visuallyHidden"
+              id=":r4:"
+              name="rating"
+              type="radio"
+              value="4"
+            />
+            <label
+              class="css-dqr9h-MuiRating-label"
+              for=":r5:"
+            >
+              <span
+                class="MuiRating-icon MuiRating-iconEmpty css-1c99szj-MuiRating-icon"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-1vooibu-MuiSvgIcon-root"
+                  data-testid="StarBorderIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiRating-visuallyHidden"
+              >
+                5 Stars
+              </span>
+            </label>
+            <input
+              class="MuiRating-visuallyHidden"
+              id=":r5:"
+              name="rating"
+              type="radio"
+              value="5"
+            />
+            <label
+              class="MuiRating-label MuiRating-pristine css-dqr9h-MuiRating-label"
+            >
+              <input
+                class="MuiRating-visuallyHidden"
+                id="rating-empty"
+                name="rating"
+                type="radio"
+                value=""
+              />
+              <span
+                class="MuiRating-visuallyHidden"
+              >
+                Empty
+              </span>
+            </label>
+          </span>
+        </div>
+        <br />
+        <div
+          class="input-item"
+        >
+          <label>
+            Release Year: 
+          </label>
+           
+          <br />
+          <input
+            id="yearOfRelease"
+            name="yearOfRelease"
+            type="number"
+            value="1965"
+          />
+        </div>
+      </div>
+      <br />
+      <button
+        class="btn btn-outline-success"
+        style="margin-left: 15px;"
+        type="button"
+      >
+        Edit Music
+      </button>
+    </div>
+  </body>,
+  "container": <div>
+    <h2>
+      Edit music information with serialNumber -&gt; 
+      1
+    </h2>
+    <div
+      class="input"
+      style="margin-left: 15px;"
+    >
+      <div
+        class="input-item"
+      >
+        <label>
+          Artist: 
+        </label>
+         
+        <br />
+        <input
+          id="artist"
+          name="artist"
+          type="text"
+          value="The Beatles"
+        />
+      </div>
+      <br />
+      <div
+        class="input-item"
+      >
+        <label>
+          Title: 
+        </label>
+         
+        <br />
+        <input
+          id="title"
+          name="title"
+          type="text"
+          value="Nowhere Man"
+        />
+      </div>
+      <br />
+      <div
+        class="input-item"
+      >
+        <label>
+          Rating: 
+        </label>
+         
+        <br />
+        <span
+          class="MuiRating-root MuiRating-sizeMedium css-1qqgbpl-MuiRating-root"
+        >
+          <label
+            class="css-dqr9h-MuiRating-label"
+            for=":r1:"
+          >
+            <span
+              class="MuiRating-icon MuiRating-iconFilled css-7qmtgc-MuiRating-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-1vooibu-MuiSvgIcon-root"
+                data-testid="StarIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiRating-visuallyHidden"
+            >
+              1 Star
+            </span>
+          </label>
+          <input
+            class="MuiRating-visuallyHidden"
+            id=":r1:"
+            name="rating"
+            type="radio"
+            value="1"
+          />
+          <label
+            class="css-dqr9h-MuiRating-label"
+            for=":r2:"
+          >
+            <span
+              class="MuiRating-icon MuiRating-iconFilled css-7qmtgc-MuiRating-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-1vooibu-MuiSvgIcon-root"
+                data-testid="StarIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiRating-visuallyHidden"
+            >
+              2 Stars
+            </span>
+          </label>
+          <input
+            class="MuiRating-visuallyHidden"
+            id=":r2:"
+            name="rating"
+            type="radio"
+            value="2"
+          />
+          <label
+            class="css-dqr9h-MuiRating-label"
+            for=":r3:"
+          >
+            <span
+              class="MuiRating-icon MuiRating-iconFilled css-7qmtgc-MuiRating-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-1vooibu-MuiSvgIcon-root"
+                data-testid="StarIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiRating-visuallyHidden"
+            >
+              3 Stars
+            </span>
+          </label>
+          <input
+            class="MuiRating-visuallyHidden"
+            id=":r3:"
+            name="rating"
+            type="radio"
+            value="3"
+          />
+          <label
+            class="css-dqr9h-MuiRating-label"
+            for=":r4:"
+          >
+            <span
+              class="MuiRating-icon MuiRating-iconFilled css-7qmtgc-MuiRating-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-1vooibu-MuiSvgIcon-root"
+                data-testid="StarIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiRating-visuallyHidden"
+            >
+              4 Stars
+            </span>
+          </label>
+          <input
+            checked=""
+            class="MuiRating-visuallyHidden"
+            id=":r4:"
+            name="rating"
+            type="radio"
+            value="4"
+          />
+          <label
+            class="css-dqr9h-MuiRating-label"
+            for=":r5:"
+          >
+            <span
+              class="MuiRating-icon MuiRating-iconEmpty css-1c99szj-MuiRating-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-1vooibu-MuiSvgIcon-root"
+                data-testid="StarBorderIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiRating-visuallyHidden"
+            >
+              5 Stars
+            </span>
+          </label>
+          <input
+            class="MuiRating-visuallyHidden"
+            id=":r5:"
+            name="rating"
+            type="radio"
+            value="5"
+          />
+          <label
+            class="MuiRating-label MuiRating-pristine css-dqr9h-MuiRating-label"
+          >
+            <input
+              class="MuiRating-visuallyHidden"
+              id="rating-empty"
+              name="rating"
+              type="radio"
+              value=""
+            />
+            <span
+              class="MuiRating-visuallyHidden"
+            >
+              Empty
+            </span>
+          </label>
+        </span>
+      </div>
+      <br />
+      <div
+        class="input-item"
+      >
+        <label>
+          Release Year: 
+        </label>
+         
+        <br />
+        <input
+          id="yearOfRelease"
+          name="yearOfRelease"
+          type="number"
+          value="1965"
+        />
+      </div>
+    </div>
+    <br />
+    <button
+      class="btn btn-outline-success"
+      style="margin-left: 15px;"
+      type="button"
+    >
+      Edit Music
+    </button>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;

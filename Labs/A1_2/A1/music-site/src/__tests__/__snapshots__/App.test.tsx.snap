@@ -1,0 +1,294 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Home > renders 1`] = `
+{
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div>
+        <div
+          class="upperPart"
+          style="margin-left: 10px; margin-bottom: 15px;"
+        >
+          <h1>
+            Music forum
+          </h1>
+          <h5>
+            Add, Modify, Remove melodies!
+          </h5>
+          <div>
+            <button
+              class="btn btn-outline-primary"
+              type="button"
+            >
+              Add music!
+            </button>
+             
+            <br />
+            <button
+              class="btn btn-outline-info"
+              type="button"
+            >
+              Check Stats!
+            </button>
+             
+            <br />
+            <input
+              id="filter"
+              name="filter"
+              placeholder="Filter by title!"
+              type="text"
+              value=""
+            />
+          </div>
+        </div>
+        <ul
+          class="list-group"
+          data-testid="list"
+        >
+          <li
+            class="list-group-item list-group-item-dark"
+          >
+            The Beatles: Rocky Racoon - 1966
+            <br />
+            <button
+              class="btn btn-warning"
+              type="button"
+            >
+              Edit music
+            </button>
+            <button
+              class="btn btn-info"
+              type="button"
+            >
+              View music
+            </button>
+            <button
+              class="btn btn-danger"
+              type="button"
+            >
+              Delete
+            </button>
+          </li>
+          <li
+            class="list-group-item list-group-item-dark"
+          >
+            The Beatles: Nowhere Man - 1965
+            <br />
+            <button
+              class="btn btn-warning"
+              type="button"
+            >
+              Edit music
+            </button>
+            <button
+              class="btn btn-info"
+              type="button"
+            >
+              View music
+            </button>
+            <button
+              class="btn btn-danger"
+              type="button"
+            >
+              Delete
+            </button>
+          </li>
+          <li
+            class="list-group-item list-group-item-dark"
+          >
+            The Beatles: Let It Be - 1970
+            <br />
+            <button
+              class="btn btn-warning"
+              type="button"
+            >
+              Edit music
+            </button>
+            <button
+              class="btn btn-info"
+              type="button"
+            >
+              View music
+            </button>
+            <button
+              class="btn btn-danger"
+              type="button"
+            >
+              Delete
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
+    <div>
+      <div
+        class="upperPart"
+        style="margin-left: 10px; margin-bottom: 15px;"
+      >
+        <h1>
+          Music forum
+        </h1>
+        <h5>
+          Add, Modify, Remove melodies!
+        </h5>
+        <div>
+          <button
+            class="btn btn-outline-primary"
+            type="button"
+          >
+            Add music!
+          </button>
+           
+          <br />
+          <button
+            class="btn btn-outline-info"
+            type="button"
+          >
+            Check Stats!
+          </button>
+           
+          <br />
+          <input
+            id="filter"
+            name="filter"
+            placeholder="Filter by title!"
+            type="text"
+            value=""
+          />
+        </div>
+      </div>
+      <ul
+        class="list-group"
+        data-testid="list"
+      >
+        <li
+          class="list-group-item list-group-item-dark"
+        >
+          The Beatles: Rocky Racoon - 1966
+          <br />
+          <button
+            class="btn btn-warning"
+            type="button"
+          >
+            Edit music
+          </button>
+          <button
+            class="btn btn-info"
+            type="button"
+          >
+            View music
+          </button>
+          <button
+            class="btn btn-danger"
+            type="button"
+          >
+            Delete
+          </button>
+        </li>
+        <li
+          class="list-group-item list-group-item-dark"
+        >
+          The Beatles: Nowhere Man - 1965
+          <br />
+          <button
+            class="btn btn-warning"
+            type="button"
+          >
+            Edit music
+          </button>
+          <button
+            class="btn btn-info"
+            type="button"
+          >
+            View music
+          </button>
+          <button
+            class="btn btn-danger"
+            type="button"
+          >
+            Delete
+          </button>
+        </li>
+        <li
+          class="list-group-item list-group-item-dark"
+        >
+          The Beatles: Let It Be - 1970
+          <br />
+          <button
+            class="btn btn-warning"
+            type="button"
+          >
+            Edit music
+          </button>
+          <button
+            class="btn btn-info"
+            type="button"
+          >
+            View music
+          </button>
+          <button
+            class="btn btn-danger"
+            type="button"
+          >
+            Delete
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;

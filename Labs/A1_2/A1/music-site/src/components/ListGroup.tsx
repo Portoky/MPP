@@ -5,13 +5,17 @@ import DeleteButton from "./DeleteButton";
 import { useState } from "react";
 import Alert from "./Alert";
 import NavViewButton from "./NavViewButton";
+
 interface ListGroupProps {
   musics: Music[];
   setMusics: (musics: Music[]) => void;
   filter: string;
+  page: number;
 }
 
-const ListGroup = ({ musics, setMusics, filter }: ListGroupProps) => {
+const elementsByPage = 5;
+
+const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
   const [indexToDelete, setIndexToDelete] = useState(-1);
 
   const onDelete = (selectedIndex: number) => {
@@ -39,11 +43,16 @@ const ListGroup = ({ musics, setMusics, filter }: ListGroupProps) => {
     }
     return false;
   }
+  //const totalElements = musics.length;
+  const musicsOnThisPage = musics.slice(
+    (page - 1) * elementsByPage,
+    page * elementsByPage
+  );
 
   return (
     <>
       <ul data-testid="list" className="list-group">
-        {musics
+        {musicsOnThisPage
           .filter((music) => {
             return filterFunction(filter, music.title);
           })

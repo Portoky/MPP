@@ -18,11 +18,20 @@ const Diagram = ({ musics, setMusics }: DiagramProps) => {
     stats[rating] += 1;
   });
   stats = stats.slice(1);
-  console.log(stats);
   return (
     <>
       <h1>Rating status</h1>
-      <BarChart series={[{ data: stats }]} width={500} height={300}></BarChart>
+      <BarChart
+        series={[{ data: stats }]}
+        xAxis={[
+          {
+            data: ["Star 1", "Star 2", "Star 3", "Star 4", "Star 5"],
+            scaleType: "band",
+          },
+        ]}
+        width={500}
+        height={300}
+      ></BarChart>
     </>
   );
 };
