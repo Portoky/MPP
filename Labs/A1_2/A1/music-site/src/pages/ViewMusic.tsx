@@ -2,12 +2,12 @@ import React from "react";
 import Rating from "@mui/material/Rating";
 import { Music } from "../App";
 import { useParams } from "react-router-dom";
+import { MusicContext } from "../MusicContext";
+import { useContext } from "react";
 
-interface ViewMusicProps {
-  musics: Music[];
-}
+const ViewMusic = () => {
+  const { musics, setMusics } = useContext(MusicContext);
 
-const ViewMusic = ({ musics }: ViewMusicProps) => {
   const param = useParams();
   const stringSerialId = param["id"] || "-1";
   const serialId = parseInt(stringSerialId);

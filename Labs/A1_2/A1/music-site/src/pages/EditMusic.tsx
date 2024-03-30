@@ -3,12 +3,12 @@ import { Music } from "../entities/Music";
 import Rating from "@mui/material/Rating";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
-interface EditMusicProps {
-  musics: Music[];
-  setMusics: (musics: Music[]) => void;
-}
+import { MusicContext } from "../MusicContext";
+import { useContext } from "react";
 
-const EditMusic = ({ musics, setMusics }: EditMusicProps) => {
+const EditMusic = () => {
+  const { musics, setMusics } = useContext(MusicContext);
+
   const param = useParams();
   const stringSerialId = param["id"] || "-1";
   const serialId = parseInt(stringSerialId);
@@ -41,7 +41,7 @@ const EditMusic = ({ musics, setMusics }: EditMusicProps) => {
     setYearOfRelease(isNaN(inputNumber) ? -1 : inputNumber);
   };
 
-  const handleEditButtonClick = () => {
+  const handleEditButtonClick = async () => {
     if (
       title == "" ||
       artist == "" ||
@@ -54,6 +54,26 @@ const EditMusic = ({ musics, setMusics }: EditMusicProps) => {
     newMusics[musicIndex].rating = rating;
     newMusics[musicIndex].yearOfRelease = yearOfRelease;
     setMusics(newMusics);
+    const postData = {
+      title: title,
+      artist: artist,
+      rating: rating,
+      yearOfRelease: yearOfRelease,
+    };
+    await fetch("http://localhost:8080/edit/" + stringSerialId, {
+      method: "PUT",
+      body: JSON.stringify(postData),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   };
 
   return (

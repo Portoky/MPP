@@ -2,12 +2,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Music } from "../entities/Music";
 interface NavEditButtonProps {
-  musics: Music[];
-  setMusic: (musics: Music[]) => void;
   serialId: number;
 }
 
-const NavEditButton = ({ musics, setMusics, serialId }: NavEditButtonProps) => {
+const NavEditButton = ({ serialId }: NavEditButtonProps) => {
   const navigate = useNavigate();
   const handleEditClick = (serialId: number) => {
     navigate("/edit/" + serialId);

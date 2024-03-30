@@ -1,53 +1,30 @@
-import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AddMusic from "./pages/AddMusic";
 import Home from "./pages/Home";
 import EditMusic from "./pages/EditMusic";
 import ViewMusic from "./pages/ViewMusic";
-import { createMusic } from "./utils/Utils";
 import Diagram from "./pages/Diagram";
+import { MusicProvider } from "./MusicContext";
 
 const App = () => {
-  const [musics, setMusics] = useState([
-    createMusic("Rocky Racoon", "The Beatles", 5, 1966),
-    createMusic("Nowhere Man", "The Beatles", 4, 1965),
-    createMusic("Let It Be", "The Beatles", 4, 1970),
-    createMusic("The Adults Are Talking", "The Strokes", 3, 2020),
-    createMusic("Végül", "Pocsai Eszter", 5, 2022),
-    createMusic("Sisi", "Sistematic", 2, 2022),
-    createMusic("Krúbi", "Copfocska", 5, 2021),
-  ]);
-
   return (
     <div>
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/" /*id show the which elements to show */
-            element={<Home musics={musics} setMusics={setMusics}></Home>}
-          />
-          <Route
-            path="/edit/:id"
-            element={
-              <EditMusic musics={musics} setMusics={setMusics}></EditMusic>
-            }
-          />
-          <Route
-            path="/view/:id"
-            element={<ViewMusic musics={musics}></ViewMusic>}
-          />
-          <Route
-            path="/pages/addmusic"
-            element={
-              <AddMusic musics={musics} setMusics={setMusics}></AddMusic>
-            }
-          />
-          <Route
-            path="/pages/diagram"
-            element={<Diagram musics={musics} setMusics={setMusics}></Diagram>}
-          />
-        </Routes>
-      </BrowserRouter>
+      <MusicProvider>
+        {" "}
+        {/*this is how we provide the props now globally with context*/}
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/" /*id show the which elements to show */
+              element={<Home></Home>}
+            />
+            <Route path="/edit/:id" element={<EditMusic></EditMusic>} />
+            <Route path="/view/:id" element={<ViewMusic></ViewMusic>} />
+            <Route path="/pages/addmusic" element={<AddMusic></AddMusic>} />
+            <Route path="/pages/diagram" element={<Diagram></Diagram>} />
+          </Routes>
+        </BrowserRouter>
+      </MusicProvider>
     </div>
   );
 };

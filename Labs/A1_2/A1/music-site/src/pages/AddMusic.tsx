@@ -2,18 +2,11 @@ import { ChangeEvent } from "react";
 import { useState } from "react";
 import Rating from "@mui/material/Rating";
 import "./AddMusic.css";
-import { Music } from "../entities/Music";
-import { createMusic } from "../utils/Utils";
-
-interface AddMusicProps {
-  musics: Music[];
-  setMusics: (musics: Music[]) => void;
-}
-
-const AddMusic = ({ musics, setMusics }: AddMusicProps) => {
+import { MusicRating } from "../entities/Music";
+const AddMusic = () => {
   const [artist, setartist] = useState("");
   const [title, setTitle] = useState("");
-  const [rating, setRating] = useState(1);
+  const [rating, setRating] = useState(MusicRating.ONESTAR);
   const [yearOfRelease, setYearOfRelease] = useState(-1);
 
   const handleArtist = (event: ChangeEvent<HTMLInputElement>) => {
@@ -29,19 +22,37 @@ const AddMusic = ({ musics, setMusics }: AddMusicProps) => {
     setYearOfRelease(isNaN(inputNumber) ? -1 : inputNumber);
   };
 
-  const handleAddButtonClick = () => {
+  const handleAddButtonClick = async () => {
     if (
       title == "" ||
       artist == "" ||
       yearOfRelease > 2024 ||
       yearOfRelease < 1000
-    )
+    ) {
       return;
-    const newMusics = [
-      ...musics.slice(0, musics.length),
-      createMusic(title, artist, rating, yearOfRelease),
-    ];
-    setMusics(newMusics);
+    }
+
+    //sending a POST request
+    const postData = {
+      title: title,
+      artist: artist,
+      rating: rating,
+      yearOfRelease: yearOfRelease,
+    };
+    await fetch("http://localhost:8080/pages/addmusic", {
+      method: "POST",
+      body: JSON.stringify(postData),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   };
 
   return (

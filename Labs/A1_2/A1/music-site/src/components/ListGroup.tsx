@@ -17,7 +17,6 @@ const elementsByPage = 5;
 
 const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
   const [indexToDelete, setIndexToDelete] = useState(-1);
-
   const onDelete = (selectedIndex: number) => {
     setIndexToDelete(selectedIndex);
   };
@@ -26,11 +25,20 @@ const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
     return <p>No item found!</p>;
   }
 
-  const doDeletion = () => {
+  const doDeletion = async () => {
     const newMusics = musics.slice();
-    newMusics.splice(indexToDelete, 1);
+    const deletedMusic = newMusics.splice(indexToDelete, 1);
     setMusics(newMusics);
     setIndexToDelete(-1);
+    await fetch("http://localhost:8080/delete/" + deletedMusic[0].serialId, {
+      method: "DELETE",
+    })
+      .then(() => {
+        console.log("Deletion successful");
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   };
 
   const noDeletion = () => {
@@ -63,16 +71,8 @@ const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
             >
               {music.artist + ": " + music.title + " - " + music.yearOfRelease}
               <br></br>
-              <NavEditButton
-                musics={musics}
-                setMusic={setMusics}
-                serialId={music.serialId}
-              ></NavEditButton>
-              <NavViewButton
-                musics={musics}
-                setMusic={setMusics}
-                serialId={music.serialId}
-              ></NavViewButton>
+              <NavEditButton serialId={music.serialId}></NavEditButton>
+              <NavViewButton serialId={music.serialId}></NavViewButton>
               <DeleteButton onClick={() => onDelete(index)}></DeleteButton>
               {
                 //conditional rendering wether we need popup or not

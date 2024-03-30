@@ -1,13 +1,12 @@
 import React from "react";
 import { Music } from "../entities/Music";
 import { BarChart } from "@mui/x-charts/BarChart";
+import { MusicContext } from "../MusicContext";
+import { useContext } from "react";
 
-interface DiagramProps {
-  musics: Music[];
-  setMusics: (musics: Music[]) => void;
-}
+const Diagram = () => {
+  const { musics, setMusics } = useContext(MusicContext);
 
-const Diagram = ({ musics, setMusics }: DiagramProps) => {
   const arr: number[] = [];
   musics.forEach((music) => {
     arr.push(music.rating);

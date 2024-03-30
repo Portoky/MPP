@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { render } from "@testing-library/react";
+import Home from "../pages/Home";
 import { Routes, Route } from "react-router-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MusicProvider } from "../MusicContext";
@@ -7,8 +8,7 @@ import EditMusic from "../pages/EditMusic";
 import ViewMusic from "../pages/ViewMusic";
 import AddMusic from "../pages/AddMusic";
 import Diagram from "../pages/Diagram";
-
-describe("Edit", () => {
+describe("Home", () => {
   test("renders", () => {
     const rendering = render(
       <MusicProvider>

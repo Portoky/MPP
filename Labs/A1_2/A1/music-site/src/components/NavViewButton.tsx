@@ -3,12 +3,10 @@ import { Music } from "../entities/Music";
 import { useNavigate } from "react-router-dom";
 
 interface NavViewButtonProps {
-  musics: Music[];
-  setMusic: (musics: Music[]) => void;
   serialId: number;
 }
 
-const NavViewButton = ({ musics, setMusics, serialId }: NavViewButtonProps) => {
+const NavViewButton = ({ serialId }: NavViewButtonProps) => {
   const navigate = useNavigate();
   const handleEditClick = (serialId: number) => {
     navigate("/view/" + serialId);

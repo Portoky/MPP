@@ -1,18 +1,27 @@
 import { ChangeEvent } from "react";
 import ListGroup from "../components/ListGroup";
-import { Music } from "../entities/Music";
 import NavAddButton from "../components/NavAddButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NavDiagramButton from "../components/NavDiagramButton";
 import Pagination from "@mui/material/Pagination";
 import { elementsByPage } from "../utils/Utils";
+import { MusicContext } from "../MusicContext";
+import { useContext } from "react";
 
-interface HomeProps {
-  musics: Music[];
-  setMusics: (musics: Music[]) => void;
-}
+const Home = () => {
+  const { musics, setMusics } = useContext(MusicContext);
+  console.log(musics);
+  useEffect(() => {
+    fetch("http://localhost:8080/")
+      .then((response) => response.json())
+      .then((data) => {
+        setMusics(data);
+      })
+      .catch((err) => {
+        console.log(err.messsage);
+      });
+  }, []);
 
-const Home = ({ musics, setMusics }: HomeProps) => {
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState(1);
   const handlefilterChage = (event: ChangeEvent<HTMLInputElement>) => {
@@ -25,6 +34,7 @@ const Home = ({ musics, setMusics }: HomeProps) => {
   ) => {
     if (page < musics.length / 5 + 1) setPage(page);
   };
+
   const elementsShown = musics.slice(
     (page - 1) * elementsByPage,
     page * elementsByPage
