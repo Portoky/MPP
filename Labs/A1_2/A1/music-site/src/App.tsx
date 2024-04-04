@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import EditMusic from "./pages/EditMusic";
 import ViewMusic from "./pages/ViewMusic";
 import Diagram from "./pages/Diagram";
-import { MusicProvider } from "./MusicContext";
+import { MusicProvider } from "./context/MusicContext";
 
 const App = () => {
   return (

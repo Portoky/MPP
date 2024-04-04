@@ -1,13 +1,16 @@
 import { ChangeEvent } from "react";
 import { useState } from "react";
 import Rating from "@mui/material/Rating";
-import "./AddMusic.css";
+import "../assets/AddMusic.css";
 import { MusicRating } from "../entities/Music";
+import { useNavigate } from "react-router-dom";
 const AddMusic = () => {
   const [artist, setartist] = useState("");
   const [title, setTitle] = useState("");
   const [rating, setRating] = useState(MusicRating.ONESTAR);
   const [yearOfRelease, setYearOfRelease] = useState(-1);
+
+  const navigate = useNavigate();
 
   const handleArtist = (event: ChangeEvent<HTMLInputElement>) => {
     setartist(event.target.value);
@@ -29,6 +32,7 @@ const AddMusic = () => {
       yearOfRelease > 2024 ||
       yearOfRelease < 1000
     ) {
+      alert("Invalid Music!");
       return;
     }
 
@@ -49,9 +53,10 @@ const AddMusic = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+        navigate("/");
       })
       .catch((err) => {
-        console.log(err.message);
+        alert(err.message);
       });
   };
 

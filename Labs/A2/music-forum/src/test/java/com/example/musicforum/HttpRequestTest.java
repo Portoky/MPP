@@ -1,11 +1,15 @@
 package com.example.musicforum;
 
+import com.example.musicforum.controller.MusicController;
 import com.example.musicforum.entities.Music;
+import com.example.musicforum.musicvalidator.MusicValidator;
+import com.example.musicforum.repository.MusicRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
@@ -13,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,6 +36,9 @@ public class HttpRequestTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private MusicRepository musicRepository;
 
     @Test
     void testMainPage() throws Exception {
@@ -51,6 +59,7 @@ public class HttpRequestTest {
 
     @Test
     public void testAddMusic() throws Exception {
+
         // Given
         Music updatedMusic = new Music("testtitle", "testartist", 4, 1970);
 
@@ -59,5 +68,6 @@ public class HttpRequestTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedMusic)))
                 .andExpect(status().is(200));
+
     }
 }

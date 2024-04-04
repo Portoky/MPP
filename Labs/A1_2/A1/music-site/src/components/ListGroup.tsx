@@ -17,7 +17,8 @@ const elementsByPage = 5;
 
 const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
   const [indexToDelete, setIndexToDelete] = useState(-1);
-  const onDelete = (selectedIndex: number) => {
+
+  const onDeleteClick = (selectedIndex: number) => {
     setIndexToDelete(selectedIndex);
   };
 
@@ -26,18 +27,32 @@ const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
   }
 
   const doDeletion = async () => {
-    const newMusics = musics.slice();
-    const deletedMusic = newMusics.splice(indexToDelete, 1);
-    setMusics(newMusics);
-    setIndexToDelete(-1);
-    await fetch("http://localhost:8080/delete/" + deletedMusic[0].serialId, {
-      method: "DELETE",
-    })
+    // const newMusics = musics.slice();
+    // const deletedMusic = newMusics.splice(indexToDelete, 1);
+    // setMusics(newMusics);
+
+    await fetch(
+      "http://localhost:8080/delete/" + musics[indexToDelete].serialId,
+      {
+        method: "DELETE",
+      }
+    )
       .then(() => {
         console.log("Deletion successful");
       })
       .catch((err) => {
         console.log(err.message);
+      });
+    setIndexToDelete(-1);
+
+    //we need to refetch the elements so the list is updated
+    await fetch("http://localhost:8080/")
+      .then((response) => response.json())
+      .then((data) => {
+        setMusics(data);
+      })
+      .catch((err) => {
+        alert(err.message);
       });
   };
 
@@ -73,7 +88,7 @@ const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
               <br></br>
               <NavEditButton serialId={music.serialId}></NavEditButton>
               <NavViewButton serialId={music.serialId}></NavViewButton>
-              <DeleteButton onClick={() => onDelete(index)}></DeleteButton>
+              <DeleteButton onClick={() => onDeleteClick(index)}></DeleteButton>
               {
                 //conditional rendering wether we need popup or not
                 indexToDelete === index && (

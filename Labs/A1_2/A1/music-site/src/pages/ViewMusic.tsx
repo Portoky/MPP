@@ -1,9 +1,9 @@
 import React from "react";
 import Rating from "@mui/material/Rating";
-import { Music } from "../App";
 import { useParams } from "react-router-dom";
-import { MusicContext } from "../MusicContext";
+import { MusicContext } from "../context/MusicContext";
 import { useContext } from "react";
+import { Music } from "../entities/Music";
 
 const ViewMusic = () => {
   const { musics, setMusics } = useContext(MusicContext);

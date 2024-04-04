@@ -1,5 +1,4 @@
 import React from "react";
-import { Music } from "../entities/Music";
 import { useNavigate } from "react-router-dom";
 
 interface NavViewButtonProps {

@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { render } from "@testing-library/react";
 import { Routes, Route } from "react-router-dom";
 import { MemoryRouter } from "react-router-dom";
-import { MusicProvider } from "../MusicContext";
+import { MusicProvider } from "../context/MusicContext";
 import EditMusic from "../pages/EditMusic";
 import ViewMusic from "../pages/ViewMusic";
 import AddMusic from "../pages/AddMusic";

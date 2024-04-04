@@ -1,7 +1,7 @@
 import React from "react";
 import { Music } from "../entities/Music";
 import { BarChart } from "@mui/x-charts/BarChart";
-import { MusicContext } from "../MusicContext";
+import { MusicContext } from "../context/MusicContext";
 import { useContext } from "react";
 
 const Diagram = () => {

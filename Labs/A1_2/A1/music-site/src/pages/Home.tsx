@@ -5,12 +5,28 @@ import { useEffect, useState } from "react";
 import NavDiagramButton from "../components/NavDiagramButton";
 import Pagination from "@mui/material/Pagination";
 import { elementsByPage } from "../utils/Utils";
-import { MusicContext } from "../MusicContext";
+import { MusicContext } from "../context/MusicContext";
 import { useContext } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+
+// const isServerAvailable = () => {
+//   useEffect(() =>{fetch("http://localhost:8080/").then((response) => {
+//     if (response.ok) {
+//       console.log(response);
+//       return true;
+//     }
+//     return false;
+//   });
+// }, [])
+// };
 
 const Home = () => {
   const { musics, setMusics } = useContext(MusicContext);
-  console.log(musics);
+  console.log(navigator.onLine);
+  window.addEventListener("offline", () => {
+    alert("You went offline! Check internet connection");
+  });
+
   useEffect(() => {
     fetch("http://localhost:8080/")
       .then((response) => response.json())
@@ -18,9 +34,9 @@ const Home = () => {
         setMusics(data);
       })
       .catch((err) => {
-        console.log(err.messsage);
+        alert(err.message + ". Server must be down.");
       });
-  }, []);
+  }, []); //[] dependency so it renders once at mounting!
 
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState(1);
@@ -32,7 +48,7 @@ const Home = () => {
     event: React.ChangeEvent<unknown>,
     page: number
   ) => {
-    if (page < musics.length / 5 + 1) setPage(page);
+    if (page <= musics.length / 5) setPage(page);
   };
 
   const elementsShown = musics.slice(

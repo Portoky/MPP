@@ -1,13 +1,15 @@
 import { ChangeEvent } from "react";
 import { Music } from "../entities/Music";
 import Rating from "@mui/material/Rating";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
-import { MusicContext } from "../MusicContext";
+import { MusicContext } from "../context/MusicContext";
 import { useContext } from "react";
 
 const EditMusic = () => {
   const { musics, setMusics } = useContext(MusicContext);
+
+  const navigate = useNavigate();
 
   const param = useParams();
   const stringSerialId = param["id"] || "-1";
@@ -47,13 +49,11 @@ const EditMusic = () => {
       artist == "" ||
       yearOfRelease > 2024 ||
       yearOfRelease < 1000
-    )
+    ) {
+      alert("Invalid Music!");
       return;
-    newMusics[musicIndex].artist = artist;
-    newMusics[musicIndex].title = title;
-    newMusics[musicIndex].rating = rating;
-    newMusics[musicIndex].yearOfRelease = yearOfRelease;
-    setMusics(newMusics);
+    }
+
     const postData = {
       title: title,
       artist: artist,
@@ -70,10 +70,17 @@ const EditMusic = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+        navigate("/");
       })
       .catch((err) => {
-        console.log(err.message);
+        alert(err.message);
       });
+
+    //newMusics[musicIndex].artist = artist;
+    //newMusics[musicIndex].title = title;
+    //newMusics[musicIndex].rating = rating;
+    //newMusics[musicIndex].yearOfRelease = yearOfRelease;
+    //setMusics(newMusics);
   };
 
   return (
