@@ -5,6 +5,7 @@ import DeleteButton from "./DeleteButton";
 import { useState } from "react";
 import Alert from "./Alert";
 import NavViewButton from "./NavViewButton";
+import axios from "axios";
 
 interface ListGroupProps {
   musics: Music[];
@@ -18,44 +19,41 @@ const elementsByPage = 5;
 const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
   const [indexToDelete, setIndexToDelete] = useState(-1);
 
-  const onDeleteClick = (selectedIndex: number) => {
-    setIndexToDelete(selectedIndex);
-  };
-
   if (musics.length === 0) {
     return <p>No item found!</p>;
   }
+
+  const onDeleteClick = (selectedIndex: number) => {
+    setIndexToDelete(selectedIndex);
+  };
 
   const doDeletion = async () => {
     // const newMusics = musics.slice();
     // const deletedMusic = newMusics.splice(indexToDelete, 1);
     // setMusics(newMusics);
-
-    await fetch(
-      "http://localhost:8080/delete/" + musics[indexToDelete].serialId,
-      {
-        method: "DELETE",
-      }
-    )
+    await axios
+      .delete("http://localhost:8080/delete/" + musics[indexToDelete].serialId)
       .then(() => {
         console.log("Deletion successful");
       })
       .catch((err) => {
         console.log(err.message);
       });
+
     setIndexToDelete(-1);
 
     //we need to refetch the elements so the list is updated
-    await fetch("http://localhost:8080/")
-      .then((response) => response.json())
-      .then((data) => {
-        setMusics(data);
+    await axios
+      .get("http://localhost:8080/")
+      .then((response) => {
+        setMusics(response.data);
       })
-      .catch((err) => {
-        alert(err.message);
+      .catch((error) => {
+        alert(error.message + ". Server might be down.");
       });
   };
 
+  //so the popup dissappears
   const noDeletion = () => {
     setIndexToDelete(-1);
   };

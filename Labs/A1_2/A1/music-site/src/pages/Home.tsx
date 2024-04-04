@@ -7,60 +7,48 @@ import Pagination from "@mui/material/Pagination";
 import { elementsByPage } from "../utils/Utils";
 import { MusicContext } from "../context/MusicContext";
 import { useContext } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-
-// const isServerAvailable = () => {
-//   useEffect(() =>{fetch("http://localhost:8080/").then((response) => {
-//     if (response.ok) {
-//       console.log(response);
-//       return true;
-//     }
-//     return false;
-//   });
-// }, [])
-// };
+import axios from "axios";
+import "../assets/Home.css";
 
 const Home = () => {
   const { musics, setMusics } = useContext(MusicContext);
-  console.log(navigator.onLine);
   window.addEventListener("offline", () => {
     alert("You went offline! Check internet connection");
   });
 
+  //side effect
   useEffect(() => {
-    fetch("http://localhost:8080/")
-      .then((response) => response.json())
-      .then((data) => {
-        setMusics(data);
+    axios
+      .get("http://localhost:8080/")
+      .then((response) => {
+        setMusics(response.data);
       })
-      .catch((err) => {
-        alert(err.message + ". Server must be down.");
+      .catch((error) => {
+        alert(error.message + ". Server might be down.");
       });
   }, []); //[] dependency so it renders once at mounting!
-
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState(1);
   const handlefilterChage = (event: ChangeEvent<HTMLInputElement>) => {
     setFilter(event.target.value);
   };
 
+  //change page number thus elements shown
   const handlePagination = (
     event: React.ChangeEvent<unknown>,
     page: number
   ) => {
-    if (page <= musics.length / 5) setPage(page);
+    if (page <= musics.length / 5 + 1) setPage(page);
   };
 
+  //take the needed elements (depending on current page) from music list
   const elementsShown = musics.slice(
     (page - 1) * elementsByPage,
     page * elementsByPage
   ).length;
   return (
     <>
-      <div
-        className="upperPart"
-        style={{ marginLeft: "10px", marginBottom: "15px" }}
-      >
+      <div className="upperPart">
         <h1>Music forum</h1>
         <h5>Add, Modify, Remove melodies!</h5>
         <div>
@@ -82,14 +70,14 @@ const Home = () => {
         filter={filter}
         page={page}
       ></ListGroup>
-      <div style={{ display: "flex" }}>
+      <div className="lowerPart">
         <Pagination
           id="pagination"
-          count={Math.floor(musics.length / 5 + 1)}
+          count={Math.ceil(musics.length / 5)}
           page={page}
           onChange={handlePagination}
         />
-        <label style={{ marginLeft: "auto" }}>
+        <label>
           Showing from {(page - 1) * elementsByPage + 1} to{" "}
           {(page - 1) * elementsByPage + elementsShown} out of {musics.length}
         </label>

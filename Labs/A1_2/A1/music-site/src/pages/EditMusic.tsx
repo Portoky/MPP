@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { MusicContext } from "../context/MusicContext";
 import { useContext } from "react";
+import "../assets/EditMusic.css";
 
 const EditMusic = () => {
   const { musics, setMusics } = useContext(MusicContext);
@@ -86,7 +87,7 @@ const EditMusic = () => {
   return (
     <>
       <h2>Edit music information with serialNumber -&gt; {serialId}</h2>
-      <div className="input" style={{ marginLeft: "15px" }}>
+      <div className="input">
         <div className="input-item">
           <label>Artist: </label> <br></br>
           <input
@@ -95,7 +96,6 @@ const EditMusic = () => {
             name="artist"
             defaultValue={newMusics[musicIndex].artist}
             onChange={handleArtist}
-            //value={artist}
           ></input>
         </div>
         <br></br>
@@ -107,7 +107,6 @@ const EditMusic = () => {
             name="title"
             defaultValue={newMusics[musicIndex].title}
             onChange={handleTitle}
-            //value={title}
           ></input>
         </div>
         <br></br>
@@ -130,13 +129,11 @@ const EditMusic = () => {
             name="yearOfRelease"
             defaultValue={newMusics[musicIndex].yearOfRelease}
             onChange={handleYearOfRelease}
-            //value={yearOfRelease === -1 || "" ? "" : yearOfRelease}
           ></input>
         </div>
       </div>
       <br></br>
       <button
-        style={{ marginLeft: "15px" }}
         type="button"
         className="btn btn-outline-success"
         onClick={handleEditButtonClick}

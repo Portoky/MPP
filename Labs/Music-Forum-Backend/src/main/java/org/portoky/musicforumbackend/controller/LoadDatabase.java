@@ -1,8 +1,8 @@
-package com.example.musicforum.controller;
+package org.portoky.musicforumbackend.controller;
 
-import com.example.musicforum.entities.Music;
-import com.example.musicforum.entities.Rating;
-import com.example.musicforum.repository.MusicRepository;
+import org.portoky.musicforumbackend.entities.Music;
+import org.portoky.musicforumbackend.entities.Rating;
+import org.portoky.musicforumbackend.repository.MusicRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -16,10 +16,6 @@ public class LoadDatabase {
     CommandLineRunner initDatabase(MusicRepository repository) {
 
         return args -> {
-            for(int i = 0; i < 1000; ++i){
-                Faker
-
-            }
             log.info("Preloading " + repository.save(new Music("Get Back", "The Beatles", 4, 1969)));
             log.info("Preloading " + repository.save(new Music("Blackbird", "The Beatles", 5, 1967)));
             log.info("Preloading " + repository.save(new Music("Rocky Racoon", "The Beatles", 5, 1966)));

@@ -1,0 +1,12 @@
+.upperPart {
+  margin-left: 10px;
+  margin-bottom: 15px;
+}
+
+.lowerPart {
+  display: flex;
+}
+
+.lowerPart label {
+  margin-left: auto;
+}
