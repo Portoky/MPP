@@ -8,6 +8,8 @@ import { elementsByPage } from "../utils/Utils";
 import { MusicContext } from "../context/MusicContext";
 import { useContext } from "react";
 import axios from "axios";
+import { WebSocket } from "ws";
+import { Stomp } from "@stomp/stompjs";
 import "../assets/Home.css";
 
 const Home = () => {
@@ -15,7 +17,13 @@ const Home = () => {
   window.addEventListener("offline", () => {
     alert("You went offline! Check internet connection");
   });
+  useEffect(() => {
+    const stompClient = Stomp.client("ws://localhost:8080/backend-socket");
 
+    stompClient.connect({}, () => {
+      console.log("Connected to WebSocket server");
+    });
+  }, []);
   //side effect
   useEffect(() => {
     axios
@@ -27,6 +35,7 @@ const Home = () => {
         alert(error.message + ". Server might be down.");
       });
   }, []); //[] dependency so it renders once at mounting!
+
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState(1);
   const handlefilterChage = (event: ChangeEvent<HTMLInputElement>) => {

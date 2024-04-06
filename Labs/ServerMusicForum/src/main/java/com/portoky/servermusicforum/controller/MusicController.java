@@ -6,6 +6,7 @@ import com.portoky.servermusicforum.exception.MusicNotFoundException;
 import com.portoky.servermusicforum.repository.MusicRepository;
 import com.portoky.servermusicforum.validator.MusicValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class MusicController {
     }
 
     @GetMapping("/")
+    @MessageMapping
     List<Music> all(){
         return repository.findAll();
     }

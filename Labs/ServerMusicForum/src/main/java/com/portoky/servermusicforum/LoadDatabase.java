@@ -16,7 +16,7 @@ public class LoadDatabase {
     CommandLineRunner initDatabase(MusicRepository repository) {
         Faker faker = new Faker();
         return args -> {
-            for(int i = 0; i < 1000; ++i){
+            for(int i = 0; i < 100; ++i){
                 log.info("Preloading " + repository.save(new Music(faker.book().title(), faker.rockBand().name(), faker.number().numberBetween(1,6), faker.number().numberBetween(1970, 2025))));
             }
             log.info("Preloading " + repository.save(new Music("Get Back", "The Beatles", 4, 1969)));
