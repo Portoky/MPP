@@ -22,7 +22,6 @@ public class MusicController {
     }
 
     @GetMapping("/")
-    @MessageMapping
     List<Music> all(){
         return repository.findAll();
     }

@@ -16,7 +16,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.setApplicationDestinationPrefixes(""); //message whose header is this routed to @MessageMapping methods
-        config.enableSimpleBroker("");
+        config.setApplicationDestinationPrefixes(""); //message whose header is this routed to @MessageMapping methods sets a prefix for all dests
+        config.enableSimpleBroker(""); //enable brokers for all addresses that start with this
     }
 }

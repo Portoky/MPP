@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@CrossOrigin("http://localhost:3030/")
+@CrossOrigin("http://localhost:3030")
 @Controller
 public class MusicSocketController {
 
@@ -24,9 +24,10 @@ public class MusicSocketController {
     public MusicSocketController(MusicRepository repository) {
         this.repository = repository;
     }
-    @MessageMapping("")
-    @SendTo("")
+    @MessageMapping("/")
+    @SendTo("/")
     List<Music> all(){
+        System.out.println("adawdadawdawd");
         return repository.findAll();
     }
 

@@ -8,7 +8,6 @@ import { elementsByPage } from "../utils/Utils";
 import { MusicContext } from "../context/MusicContext";
 import { useContext } from "react";
 import axios from "axios";
-import { WebSocket } from "ws";
 import { Stomp } from "@stomp/stompjs";
 import "../assets/Home.css";
 
@@ -22,10 +21,16 @@ const Home = () => {
 
     stompClient.connect({}, () => {
       console.log("Connected to WebSocket server");
+      const subscription = stompClient.subscribe("/", function (message) {
+        const body = JSON.parse(message.body);
+        console.log("Received message:", body);
+        // Process the received message as needed
+      });
+      console.log(subscription);
     });
   }, []);
   //side effect
-  useEffect(() => {
+  /*useEffect(() => {
     axios
       .get("http://localhost:8080/")
       .then((response) => {
@@ -34,7 +39,7 @@ const Home = () => {
       .catch((error) => {
         alert(error.message + ". Server might be down.");
       });
-  }, []); //[] dependency so it renders once at mounting!
+  }, []); //[] dependency so it renders once at mounting!*/
 
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState(1);
