@@ -7,7 +7,7 @@ export enum MusicRating {
 }
 
 export interface Music {
-  serialId: number;
+  musicId: number;
   title: string;
   artist: string;
   rating: MusicRating; //1-5

@@ -2,21 +2,22 @@ import React from "react";
 import { Music } from "../entities/Music";
 import NavEditButton from "./NavEditButton";
 import DeleteButton from "./DeleteButton";
-import { useState } from "react";
+import { MusicContext } from "../context/MusicContext";
+import { useState, useContext } from "react";
 import Alert from "./Alert";
 import NavViewButton from "./NavViewButton";
 import axios from "axios";
 
 interface ListGroupProps {
-  musics: Music[];
-  setMusics: (musics: Music[]) => void;
   filter: string;
   page: number;
 }
 
 const elementsByPage = 5;
 
-const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
+const ListGroup = ({ filter, page }: ListGroupProps) => {
+  const { musics, setMusics } = useContext(MusicContext);
+
   const [indexToDelete, setIndexToDelete] = useState(-1);
 
   if (musics.length === 0) {
@@ -32,7 +33,7 @@ const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
     // const deletedMusic = newMusics.splice(indexToDelete, 1);
     // setMusics(newMusics);
     await axios
-      .delete("http://localhost:8080/delete/" + musics[indexToDelete].serialId)
+      .delete("http://localhost:8080/delete/" + musics[indexToDelete].musicId)
       .then(() => {
         console.log("Deletion successful");
       })
@@ -64,6 +65,7 @@ const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
     }
     return false;
   }
+
   //const totalElements = musics.length;
   const musicsOnThisPage = musics.slice(
     (page - 1) * elementsByPage,
@@ -80,12 +82,12 @@ const ListGroup = ({ musics, setMusics, filter, page }: ListGroupProps) => {
           .map((music, index) => (
             <li
               className={"list-group-item list-group-item-dark"}
-              key={music.serialId}
+              key={music.musicId}
             >
               {music.artist + ": " + music.title + " - " + music.yearOfRelease}
               <br></br>
-              <NavEditButton serialId={music.serialId}></NavEditButton>
-              <NavViewButton serialId={music.serialId}></NavViewButton>
+              <NavEditButton musicId={music.musicId}></NavEditButton>
+              <NavViewButton musicId={music.musicId}></NavViewButton>
               <DeleteButton onClick={() => onDeleteClick(index)}></DeleteButton>
               {
                 //conditional rendering wether we need popup or not

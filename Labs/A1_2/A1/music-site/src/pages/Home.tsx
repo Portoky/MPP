@@ -13,24 +13,40 @@ import "../assets/Home.css";
 
 const Home = () => {
   const { musics, setMusics } = useContext(MusicContext);
+
   window.addEventListener("offline", () => {
     alert("You went offline! Check internet connection");
   });
+  //generated value saved
+
   useEffect(() => {
-    const stompClient = Stomp.client("ws://localhost:8080/backend-socket");
+    const socket = new WebSocket("ws://localhost:8080/backend-socket");
+    const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, () => {
-      console.log("Connected to WebSocket server");
-      const subscription = stompClient.subscribe("/", function (message) {
-        const body = JSON.parse(message.body);
-        console.log("Received message:", body);
-        // Process the received message as needed
+      stompClient.subscribe("/generatedmusic", (message) => {
+        const newMusic = JSON.parse(message.body);
+        // console.log(newMusic.musicId);
+        // if (!receivedIds.has(newMusic.musicId)) {
+        //   setMusics((oldMusics) => [...oldMusics, newMusic]);
+        //   setReceivedIds((oldRecievedIds) =>
+        //     new Set(oldRecievedIds).add(newMusic.musicId)
+        //   );
+        // }
+        axios
+          .get("http://localhost:8080/")
+          .then((response) => {
+            setMusics(response.data);
+          })
+          .catch((error) => {
+            alert(error.message + ". Server might be down.");
+          });
       });
-      console.log(subscription);
     });
   }, []);
+
   //side effect
-  /*useEffect(() => {
+  useEffect(() => {
     axios
       .get("http://localhost:8080/")
       .then((response) => {
@@ -39,7 +55,7 @@ const Home = () => {
       .catch((error) => {
         alert(error.message + ". Server might be down.");
       });
-  }, []); //[] dependency so it renders once at mounting!*/
+  }, []); //[] dependency so it renders once at mounting!
 
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState(1);
@@ -78,12 +94,7 @@ const Home = () => {
           ></input>
         </div>
       </div>
-      <ListGroup
-        musics={musics}
-        setMusics={setMusics}
-        filter={filter}
-        page={page}
-      ></ListGroup>
+      <ListGroup filter={filter} page={page}></ListGroup>
       <div className="lowerPart">
         <Pagination
           id="pagination"

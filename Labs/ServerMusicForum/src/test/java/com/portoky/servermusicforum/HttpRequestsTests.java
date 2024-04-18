@@ -1,27 +1,24 @@
-package com.example.musicforum;
+package com.portoky.servermusicforum;
 
-import com.example.musicforum.controller.MusicController;
-import com.example.musicforum.entities.Music;
-import com.example.musicforum.musicvalidator.MusicValidator;
-import com.example.musicforum.repository.MusicRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.portoky.servermusicforum.entity.Music;
+import com.portoky.servermusicforum.repository.MusicRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-
-import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.test.web.servlet.MockMvc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
 import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.springframework.boot.test.context.SpringBootTest;
+
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class HttpRequestTest {
@@ -70,4 +67,3 @@ public class HttpRequestTest {
                 .andExpect(status().is(200));
 
     }
-}

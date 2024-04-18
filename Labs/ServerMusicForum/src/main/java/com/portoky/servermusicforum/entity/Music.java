@@ -1,16 +1,21 @@
 package com.portoky.servermusicforum.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name="Music")
 public class Music {
     private @Id
-    @GeneratedValue Long serialId;
+    @GeneratedValue
+    @Column(name="MusicId")
+    Long musicId;
+    @Column(name="Title")
     private String title;
+    @Column(name="Artist")
     private String artist;
+    @Column(name="Rating")
     private Integer rating;
+    @Column(name="ReleaseYear")
     private Integer yearOfRelease;
 
     public Music(){}
@@ -24,7 +29,7 @@ public class Music {
     @Override
     public String toString() {
         return "Music{" +
-                "serialId=" + serialId +
+                "musicId=" + musicId +
                 ", title='" + title + '\'' +
                 ", artist='" + artist + '\'' +
                 ", rating=" + rating +
@@ -32,12 +37,12 @@ public class Music {
                 '}';
     }
 
-    public Long getSerialId() {
-        return serialId;
+    public Long getMusicId() {
+        return musicId;
     }
 
-    public void setSerialId(Long serialId) {
-        this.serialId = serialId;
+    public void setMusicId(Long musicId) {
+        this.musicId = musicId;
     }
 
     public String getTitle() {

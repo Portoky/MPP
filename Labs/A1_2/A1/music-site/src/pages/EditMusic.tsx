@@ -13,16 +13,18 @@ const EditMusic = () => {
   const navigate = useNavigate();
 
   const param = useParams();
-  const stringSerialId = param["id"] || "-1";
-  const serialId = parseInt(stringSerialId);
+  const stringmusicId = param["id"] || "-1";
+  const musicId = parseInt(stringmusicId);
 
   const newMusics = musics.slice();
   const musicIndex = newMusics.findIndex((music: Music) => {
-    return music.serialId === serialId;
+    return music.musicId === musicId;
   });
-  if (serialId === -1) {
+  if (musicId === -1) {
     return <p>Element not found!</p>;
   }
+
+  console.log(musicIndex);
 
   const [artist, setartist] = useState(newMusics[musicIndex].artist);
   const [title, setTitle] = useState(newMusics[musicIndex].title);
@@ -61,7 +63,7 @@ const EditMusic = () => {
       rating: rating,
       yearOfRelease: yearOfRelease,
     };
-    await fetch("http://localhost:8080/edit/" + stringSerialId, {
+    await fetch("http://localhost:8080/edit/" + stringmusicId, {
       method: "PUT",
       body: JSON.stringify(postData),
       headers: {
@@ -86,7 +88,7 @@ const EditMusic = () => {
 
   return (
     <>
-      <h2>Edit music information with serialNumber -&gt; {serialId}</h2>
+      <h2>Edit music information with serialNumber -&gt; {musicId}</h2>
       <div className="input">
         <div className="input-item">
           <label>Artist: </label> <br></br>

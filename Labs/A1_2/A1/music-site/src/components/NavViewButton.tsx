@@ -2,19 +2,19 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 interface NavViewButtonProps {
-  serialId: number;
+  musicId: number;
 }
 
-const NavViewButton = ({ serialId }: NavViewButtonProps) => {
+const NavViewButton = ({ musicId }: NavViewButtonProps) => {
   const navigate = useNavigate();
-  const handleEditClick = (serialId: number) => {
-    navigate("/view/" + serialId);
+  const handleEditClick = (musicId: number) => {
+    navigate("/view/" + musicId);
   };
   return (
     <button
       type="button"
       className="btn btn-info"
-      onClick={() => handleEditClick(serialId)}
+      onClick={() => handleEditClick(musicId)}
     >
       View music
     </button>

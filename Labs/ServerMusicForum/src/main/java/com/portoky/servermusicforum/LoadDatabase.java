@@ -11,12 +11,12 @@ import net.datafaker.Faker;
 @Configuration
 public class LoadDatabase {
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
-
-    @Bean
+    //no need for that
+    /*@Bean
     CommandLineRunner initDatabase(MusicRepository repository) {
         Faker faker = new Faker();
         return args -> {
-            for(int i = 0; i < 100; ++i){
+            for(int i = 0; i < 0; ++i){
                 log.info("Preloading " + repository.save(new Music(faker.book().title(), faker.rockBand().name(), faker.number().numberBetween(1,6), faker.number().numberBetween(1970, 2025))));
             }
             log.info("Preloading " + repository.save(new Music("Get Back", "The Beatles", 4, 1969)));
@@ -29,5 +29,5 @@ public class LoadDatabase {
             log.info("Preloading " + repository.save(new Music("Sisi", "Sistematic", 2, 2022)));
             log.info("Preloading " + repository.save(new Music("Krúbi", "Copfocska", 5, 2021)));
         };
-    }
+    }*/
 }
