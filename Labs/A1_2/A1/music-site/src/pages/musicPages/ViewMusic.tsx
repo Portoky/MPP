@@ -1,10 +1,10 @@
 import React from "react";
 import Rating from "@mui/material/Rating";
 import { useParams } from "react-router-dom";
-import { MusicContext } from "../context/MusicContext";
+import { MusicContext } from "../../context/MusicContext";
 import { useContext } from "react";
-import { Music } from "../entities/Music";
-import "../assets/ViewMusic.css";
+import { Music } from "../../entities/Music";
+import "../../assets/ViewMusic.css";
 
 const ViewMusic = () => {
   const { musics, setMusics } = useContext(MusicContext);
@@ -20,7 +20,7 @@ const ViewMusic = () => {
       <h2>View music information with serialNumber -&gt; {musicId}</h2>
       <div className="viewInfo">
         <p>Serial Id: {musics[musicIndex].musicId}</p>
-        <p>Band Name: {musics[musicIndex].artist}</p>
+        <p>Band Name: {musics[musicIndex].artist.name}</p>
         <p>Song Title: {musics[musicIndex].title}</p>
         <p>
           Rating:{" "}

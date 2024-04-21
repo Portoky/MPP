@@ -1,8 +1,11 @@
 package com.portoky.servermusicforum.controller;
 
+import com.portoky.servermusicforum.entity.Artist;
 import com.portoky.servermusicforum.entity.Music;
+import com.portoky.servermusicforum.exception.ArtistNotFoundException;
 import com.portoky.servermusicforum.exception.InvalidMusicException;
 import com.portoky.servermusicforum.exception.MusicNotFoundException;
+import com.portoky.servermusicforum.repository.ArtistRepository;
 import com.portoky.servermusicforum.repository.MusicRepository;
 import com.portoky.servermusicforum.validator.MusicValidator;
 import net.datafaker.Faker;
@@ -14,63 +17,88 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@CrossOrigin("http://localhost:3030/")
+@CrossOrigin("http://localhost:3030")
+//@CrossOrigin("")
 public class MusicController {
-
-    private final MusicRepository repository;
+    private final MusicRepository musicRepository;
+    private final ArtistRepository artistRepository;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
-
-    public MusicController(MusicRepository repository) {
-        this.repository = repository;
+    public MusicController(MusicRepository musicRepository, ArtistRepository artistRepository) {
+        this.musicRepository = musicRepository;
+        this.artistRepository = artistRepository;
     }
 
-    @GetMapping("/")
+    @GetMapping("/music")
     List<Music> all(){
-        System.out.println("adawd");
-        return repository.findAll();
+        List<Music> result = musicRepository.findAll();
+        return musicRepository.findAll();
     }
-
-    @PostMapping("/pages/addmusic")
-    Music newMusic(@RequestBody Music newMusic){
+    @GetMapping("/music/artist/{id}") //returns all the music of an artist
+    List<Music> artistMusics(@PathVariable("id") Long id){
+        return musicRepository.findByArtistArtistId(id); //its like a query where artist.artistId = id
+    }
+    @PostMapping("/music/add/{id}")
+    Music newMusic(@RequestBody Music newMusic, @PathVariable("id") Long id){ //artistId
         try{
+
+            Optional<Artist> optionalArtist = artistRepository.findById(Long.valueOf(id));
+            Artist artistTemp = optionalArtist.orElseThrow(() -> new ArtistNotFoundException(Long.valueOf(id))); //in case it null
+
+            newMusic.setArtist(artistTemp);
+
             MusicValidator.validate(newMusic);
-            return repository.save(newMusic);
+
+            artistTemp.getMusicList().add(newMusic);
+            return musicRepository.save(newMusic);
+
         }catch (InvalidMusicException ex){
             System.out.println(ex.getMessage());
-            return new Music("Invalid Music", "", 0, -1);
+            return new Music("Invalid", -1, -1);
         }
     }
 
-    @GetMapping("/view/{musicId}")
+    @GetMapping("/music/view/{musicId}")
     Music one(@PathVariable Long musicId) throws MusicNotFoundException {
 
-        return repository.findById(musicId).orElseThrow(() -> new MusicNotFoundException(musicId)); //if not found
+        return musicRepository.findById(musicId).orElseThrow(() -> new MusicNotFoundException(musicId));
     }
 
-    @PutMapping("/edit/{musicId}")
-    Music replaceMusic(@RequestBody Music newMusic, @PathVariable Long musicId){
+    @PutMapping("/music/edit/{musicId}/artist/{artistId}")
+    Music replaceMusic(@RequestBody Music newMusic, @PathVariable Long musicId, @PathVariable Long artistId){
         try{
-            MusicValidator.validate(newMusic);
-            return repository.findById(musicId).map(music -> {
+
+            return musicRepository.findById(musicId).map(music -> {
                 music.setTitle(newMusic.getTitle());
-                music.setArtist(newMusic.getArtist());
                 music.setRating(newMusic.getRating());
                 music.setYearOfRelease(newMusic.getYearOfRelease());
-                return repository.save(music);
+
+                Optional<Artist> optionalArtist = artistRepository.findById(Long.valueOf(artistId));
+                Artist artistTemp = optionalArtist.orElseThrow(() -> new ArtistNotFoundException(Long.valueOf(artistId))); //in case it null
+                //first delete the connection between artist and music
+                music.getArtist().getMusicList().remove(music);
+                //then udpdate it only
+                music.setArtist(artistTemp);
+                music.getArtist().getMusicList().add(music);
+
+                MusicValidator.validate(music);
+
+                return musicRepository.save(music);
             }).orElseThrow(() -> new MusicNotFoundException(musicId));
         }catch(InvalidMusicException ex){
             System.out.println(ex.getMessage());
-            return new Music("Invalid Music", "", 0, -1);
+            return new Music("Invalid Music", 0, -1);
         }
     }
 
-    @DeleteMapping("/delete/{musicId}")
+    @DeleteMapping("/music/delete/{musicId}")
     void deleteMusic(@PathVariable Long musicId){
-        repository.deleteById(musicId);
+        Music musicToDelete = musicRepository.findById(musicId).orElseThrow(() -> new MusicNotFoundException(musicId));
+        musicRepository.deleteById(musicId);
     }
 
     /*@Async
@@ -80,13 +108,15 @@ public class MusicController {
         Music music = generateMusicEntity();
         //first save it to the repo
         // Send the Music entity to the client
-        messagingTemplate.convertAndSend("/generatedmusic", repository.save(music));
+        messagingTemplate.convertAndSend("/generatedmusic", musicRepository.save(music));
 
-    }*/
-    private Music generateMusicEntity() {
+    }
+        private Music generateMusicEntity() {
         Faker faker = new Faker();
         return new Music(faker.book().title(), faker.rockBand().name(), faker.number().numberBetween(1,6), faker.number().numberBetween(1970, 2025));
     }
+    */
+
 }
 
     

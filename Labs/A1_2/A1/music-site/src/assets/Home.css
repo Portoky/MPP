@@ -3,10 +3,33 @@
   margin-bottom: 15px;
 }
 
-.lowerPart {
+.paginationPart {
   display: flex;
 }
 
-.lowerPart label {
+.paginationPart label {
   margin-left: auto;
+  padding: 0, 20, 0, 0;
+}
+
+.entityList {
+  width: 100%;
+  display: flex;
+}
+
+.ListGroupMusic {
+  width: 45%;
+  display: inline-block;
+  margin-right: 15px;
+}
+.vertical-line {
+  display: inline-block;
+  width: 1px;
+  height: auto;
+  background-color: black;
+}
+.ListGroupArtist {
+  margin-left: 15px;
+  width: 45%;
+  display: inline-block;
 }

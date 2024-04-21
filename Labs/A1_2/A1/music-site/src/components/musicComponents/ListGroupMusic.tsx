@@ -1,21 +1,19 @@
 import React from "react";
-import { Music } from "../entities/Music";
-import NavEditButton from "./NavEditButton";
-import DeleteButton from "./DeleteButton";
-import { MusicContext } from "../context/MusicContext";
+import { Music } from "../../entities/Music";
+import DeleteButton from "../DeleteButton";
+import { MusicContext } from "../../context/MusicContext";
 import { useState, useContext } from "react";
-import Alert from "./Alert";
-import NavViewButton from "./NavViewButton";
+import Alert from "../Alert";
 import axios from "axios";
+import { elementsByPage } from "../../utils/Utils";
+import NavButton from "../NavButton";
 
-interface ListGroupProps {
+interface ListGroupMusicProps {
   filter: string;
   page: number;
 }
 
-const elementsByPage = 5;
-
-const ListGroup = ({ filter, page }: ListGroupProps) => {
+const ListGroupMusic = ({ filter, page }: ListGroupMusicProps) => {
   const { musics, setMusics } = useContext(MusicContext);
 
   const [indexToDelete, setIndexToDelete] = useState(-1);
@@ -29,11 +27,10 @@ const ListGroup = ({ filter, page }: ListGroupProps) => {
   };
 
   const doDeletion = async () => {
-    // const newMusics = musics.slice();
-    // const deletedMusic = newMusics.splice(indexToDelete, 1);
-    // setMusics(newMusics);
     await axios
-      .delete("http://localhost:8080/delete/" + musics[indexToDelete].musicId)
+      .delete(
+        "http://localhost:8080/music/delete/" + musics[indexToDelete].musicId
+      )
       .then(() => {
         console.log("Deletion successful");
       })
@@ -45,7 +42,7 @@ const ListGroup = ({ filter, page }: ListGroupProps) => {
 
     //we need to refetch the elements so the list is updated
     await axios
-      .get("http://localhost:8080/")
+      .get("http://localhost:8080/music")
       .then((response) => {
         setMusics(response.data);
       })
@@ -84,11 +81,30 @@ const ListGroup = ({ filter, page }: ListGroupProps) => {
               className={"list-group-item list-group-item-dark"}
               key={music.musicId}
             >
-              {music.artist + ": " + music.title + " - " + music.yearOfRelease}
+              {music.artist === null
+                ? "Unknown: " + music.title + " - " + music.yearOfRelease
+                : music.artist.name +
+                  ": " +
+                  music.title +
+                  " - " +
+                  music.yearOfRelease}{" "}
               <br></br>
-              <NavEditButton musicId={music.musicId}></NavEditButton>
-              <NavViewButton musicId={music.musicId}></NavViewButton>
-              <DeleteButton onClick={() => onDeleteClick(index)}></DeleteButton>
+              <NavButton /*FOR EDIT*/
+                path={"/music/edit/" + music.musicId}
+                className="btn btn-warning"
+              >
+                Edit music
+              </NavButton>
+              <NavButton /*FOR VIEW*/
+                path={"/music/view/" + music.musicId}
+                className="btn btn-info"
+              >
+                View music
+              </NavButton>
+              <DeleteButton
+                onClick={() => onDeleteClick(index)}
+                text="Delete Music"
+              ></DeleteButton>
               {
                 //conditional rendering wether we need popup or not
                 indexToDelete === index && (
@@ -107,4 +123,4 @@ const ListGroup = ({ filter, page }: ListGroupProps) => {
   );
 };
 
-export default ListGroup;
+export default ListGroupMusic;

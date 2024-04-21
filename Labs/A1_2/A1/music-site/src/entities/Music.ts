@@ -1,3 +1,5 @@
+import { Artist } from "./Artist";
+
 export enum MusicRating {
   ONESTAR = 1,
   TWOSTAR,
@@ -9,7 +11,7 @@ export enum MusicRating {
 export interface Music {
   musicId: number;
   title: string;
-  artist: string;
+  artist: Artist;
   rating: MusicRating; //1-5
   yearOfRelease: number;
 }

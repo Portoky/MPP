@@ -5,4 +5,9 @@
 
 .input-item {
   vertical-align: middle;
+  width: 30%;
+}
+
+button {
+  margin-left: 10px;
 }

@@ -3,9 +3,9 @@ import { render } from "@testing-library/react";
 import { Routes, Route } from "react-router-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MusicProvider } from "../context/MusicContext";
-import EditMusic from "../pages/EditMusic";
-import ViewMusic from "../pages/ViewMusic";
-import AddMusic from "../pages/AddMusic";
+import EditMusic from "../pages/musicPages/EditMusic";
+import ViewMusic from "../pages/musicPages/ViewMusic";
+import AddMusic from "../pages/musicPages/AddMusic";
 import Diagram from "../pages/Diagram";
 
 describe("Edit", () => {

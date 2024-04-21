@@ -1,19 +1,28 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useContext } from "react";
 import { useState } from "react";
 import Rating from "@mui/material/Rating";
-import "../assets/AddMusic.css";
-import { MusicRating } from "../entities/Music";
+import "../../assets/AddMusic.css";
+import { MusicRating } from "../../entities/Music";
 import { useNavigate } from "react-router-dom";
+import { ArtistContext } from "../../context/ArtistContext";
+import { Artist } from "../../entities/Artist";
+import Select from "react-select";
+
 const AddMusic = () => {
-  const [artist, setartist] = useState("");
   const [title, setTitle] = useState("");
   const [rating, setRating] = useState(MusicRating.ONESTAR);
   const [yearOfRelease, setYearOfRelease] = useState(-1);
-
+  const [artist, setArtist] = useState<Artist | null>(null);
   const navigate = useNavigate();
+  const { artists, setArtists } = useContext(ArtistContext);
 
-  const handleArtist = (event: ChangeEvent<HTMLInputElement>) => {
-    setartist(event.target.value);
+  const handleArtist = (opt) => {
+    const artistId = opt.value;
+    const newArtist = artists.find((artist: Artist) => {
+      return artistId === artist.artistId;
+    });
+    if (newArtist != null) setArtist(newArtist);
+    console.log(artist);
   };
 
   const handleTitle = (event: ChangeEvent<HTMLInputElement>) => {
@@ -27,8 +36,8 @@ const AddMusic = () => {
 
   const handleAddButtonClick = async () => {
     if (
-      title == "" ||
-      artist == "" ||
+      title === "" ||
+      artist === null ||
       yearOfRelease > 2024 ||
       yearOfRelease < 1000
     ) {
@@ -39,11 +48,10 @@ const AddMusic = () => {
     //sending a POST request
     const postData = {
       title: title,
-      artist: artist,
       rating: rating,
       yearOfRelease: yearOfRelease,
     };
-    await fetch("http://localhost:8080/pages/addmusic", {
+    await fetch("http://localhost:8080/music/add/" + artist.artistId, {
       method: "POST",
       body: JSON.stringify(postData),
       headers: {
@@ -52,7 +60,6 @@ const AddMusic = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         navigate("/");
       })
       .catch((err) => {
@@ -60,25 +67,30 @@ const AddMusic = () => {
       });
   };
 
+  //options
+  const artistOptions: { label: string; value: number }[] = [];
+  artists.forEach((artist) => {
+    artistOptions.push({ label: artist.name, value: artist.artistId });
+  });
+
   return (
     <>
       <h2>Add music information</h2>
       <div className="input">
         <div className="input-item">
-          <label>Artist: </label> <br></br>
-          <input
-            type="text"
-            id="artist"
-            name="artist"
+          <label>Choose artist: </label> <br></br>
+          <Select
+            className="artistSelect"
+            options={artistOptions}
             onChange={handleArtist}
-            value={artist}
-          ></input>
+          ></Select>
         </div>
         <br></br>
         <div className="input-item">
           <label>Title:{""} </label> <br></br>
           <input
             type="text"
+            className="form-control"
             id="title"
             name="title"
             onChange={handleTitle}
@@ -101,6 +113,7 @@ const AddMusic = () => {
           <label>Release Year: </label> <br></br>
           <input
             type="number"
+            className="form-control"
             id="yearOfRelease"
             name="yearOfRelease"
             onChange={handleYearOfRelease}
@@ -109,13 +122,16 @@ const AddMusic = () => {
         </div>
       </div>
       <br></br>
-      <button
-        type="button"
-        className="btn btn-outline-success"
-        onClick={handleAddButtonClick}
-      >
-        Add Music
-      </button>
+      <div className="input-item">
+        <button
+          style={{ marginLeft: "10px" }}
+          type="button"
+          className="btn btn-outline-success"
+          onClick={handleAddButtonClick}
+        >
+          Add Music
+        </button>
+      </div>
     </>
   );
 };

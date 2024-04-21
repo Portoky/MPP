@@ -1,4 +1,4 @@
-import { Music } from "../entities/Music";
+/*import { Music } from "../entities/Music";
 
 let guid = 0;
 const getAndIncrementGuid = function (): number {
@@ -15,5 +15,5 @@ export const createMusic = (
   const serialId = getAndIncrementGuid();
   return { serialId, title, artist, rating, yearOfRelease };
 };
-
+*/
 export const elementsByPage = 5;

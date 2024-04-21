@@ -1,15 +1,17 @@
 import { ChangeEvent } from "react";
-import { Music } from "../entities/Music";
+import { Music } from "../../entities/Music";
+import { Artist } from "../../entities/Artist";
 import Rating from "@mui/material/Rating";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
-import { MusicContext } from "../context/MusicContext";
-import { useContext } from "react";
-import "../assets/EditMusic.css";
+import { useState, useContext } from "react";
+import { MusicContext } from "../../context/MusicContext";
+import { ArtistContext } from "../../context/ArtistContext";
+import "../../assets/EditMusic.css";
+import Select from "react-select";
 
 const EditMusic = () => {
   const { musics, setMusics } = useContext(MusicContext);
-
+  const { artists, setArtists } = useContext(ArtistContext);
   const navigate = useNavigate();
 
   const param = useParams();
@@ -26,15 +28,19 @@ const EditMusic = () => {
 
   console.log(musicIndex);
 
-  const [artist, setartist] = useState(newMusics[musicIndex].artist);
+  const [artist, setArtist] = useState<Artist | null>(null);
   const [title, setTitle] = useState(newMusics[musicIndex].title);
   const [rating, setRating] = useState(newMusics[musicIndex].rating);
   const [yearOfRelease, setYearOfRelease] = useState(
     newMusics[musicIndex].yearOfRelease
   );
 
-  const handleArtist = (event: ChangeEvent<HTMLInputElement>) => {
-    setartist(event.target.value);
+  const handleArtist = (opt) => {
+    const artistId = opt.value;
+    const newArtist = artists.find((artist: Artist) => {
+      return artistId === artist.artistId;
+    });
+    if (newArtist != null) setArtist(newArtist);
   };
 
   const handleTitle = (event: ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +55,7 @@ const EditMusic = () => {
   const handleEditButtonClick = async () => {
     if (
       title == "" ||
-      artist == "" ||
+      artist == null ||
       yearOfRelease > 2024 ||
       yearOfRelease < 1000
     ) {
@@ -59,52 +65,53 @@ const EditMusic = () => {
 
     const postData = {
       title: title,
-      artist: artist,
       rating: rating,
       yearOfRelease: yearOfRelease,
     };
-    await fetch("http://localhost:8080/edit/" + stringmusicId, {
-      method: "PUT",
-      body: JSON.stringify(postData),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
+    await fetch(
+      "http://localhost:8080/music/edit/" +
+        stringmusicId +
+        "/artist/" +
+        artist.artistId,
+      {
+        method: "PUT",
+        body: JSON.stringify(postData),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         navigate("/");
       })
       .catch((err) => {
         alert(err.message);
       });
-
-    //newMusics[musicIndex].artist = artist;
-    //newMusics[musicIndex].title = title;
-    //newMusics[musicIndex].rating = rating;
-    //newMusics[musicIndex].yearOfRelease = yearOfRelease;
-    //setMusics(newMusics);
   };
 
+  const artistOptions: { label: string; value: number }[] = [];
+  artists.forEach((artist) => {
+    artistOptions.push({ label: artist.name, value: artist.artistId });
+  });
   return (
     <>
       <h2>Edit music information with serialNumber -&gt; {musicId}</h2>
       <div className="input">
         <div className="input-item">
           <label>Artist: </label> <br></br>
-          <input
-            type="text"
-            id="artist"
-            name="artist"
-            defaultValue={newMusics[musicIndex].artist}
+          <Select
+            className="artistSelect"
+            options={artistOptions}
             onChange={handleArtist}
-          ></input>
+          ></Select>
         </div>
         <br></br>
         <div className="input-item">
           <label>Title: </label> <br></br>
           <input
             type="text"
+            className="form-control"
             id="title"
             name="title"
             defaultValue={newMusics[musicIndex].title}
@@ -117,7 +124,7 @@ const EditMusic = () => {
           <Rating
             name="rating"
             value={rating}
-            onChange={(event, newRating) => {
+            onChange={(_event, newRating) => {
               setRating(newRating || 1);
             }}
           />
@@ -127,6 +134,7 @@ const EditMusic = () => {
           <label>Release Year: </label> <br></br>
           <input
             type="number"
+            className="form-control"
             id="yearOfRelease"
             name="yearOfRelease"
             defaultValue={newMusics[musicIndex].yearOfRelease}
@@ -137,6 +145,7 @@ const EditMusic = () => {
       <br></br>
       <button
         type="button"
+        style={{ marginLeft: "10px" }}
         className="btn btn-outline-success"
         onClick={handleEditButtonClick}
       >

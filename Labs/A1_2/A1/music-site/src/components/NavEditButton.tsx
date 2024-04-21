@@ -1,19 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 interface NavEditButtonProps {
-  musicId: number;
+  entityId: number;
 }
 
-const NavEditButton = ({ musicId }: NavEditButtonProps) => {
+const NavEditButton = ({ entityId }: NavEditButtonProps) => {
   const navigate = useNavigate();
-  const handleEditClick = (musicId: number) => {
-    navigate("/edit/" + musicId);
+  const handleEditClick = (entityId: number) => {
+    navigate("/edit/" + entityId);
   };
   return (
     <button
       type="button"
       className="btn btn-warning"
-      onClick={() => handleEditClick(musicId)}
+      onClick={() => handleEditClick(entityId)}
     >
       Edit music
     </button>

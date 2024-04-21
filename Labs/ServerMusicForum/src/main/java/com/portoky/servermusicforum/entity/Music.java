@@ -3,25 +3,27 @@ package com.portoky.servermusicforum.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="Music")
+@Table(name="Musics")
 public class Music {
     private @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="MusicId")
     Long musicId;
     @Column(name="Title")
     private String title;
-    @Column(name="Artist")
-    private String artist;
+
     @Column(name="Rating")
     private Integer rating;
     @Column(name="ReleaseYear")
     private Integer yearOfRelease;
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "artist_id")
+    private Artist artist;
+
     public Music(){}
-    public Music(String title, String artist, Integer rating, Integer yearOfRelease) {
+    public Music(String title, Integer rating, Integer yearOfRelease) {
         this.title = title;
-        this.artist = artist;
         this.rating = rating;
         this.yearOfRelease = yearOfRelease;
     }
@@ -53,11 +55,11 @@ public class Music {
         this.title = title;
     }
 
-    public String getArtist() {
+    public Artist getArtist() {
         return artist;
     }
 
-    public void setArtist(String artist) {
+    public void setArtist(Artist artist) {
         this.artist = artist;
     }
 
@@ -76,7 +78,5 @@ public class Music {
     public void setYearOfRelease(Integer yearOfRelease) {
         this.yearOfRelease = yearOfRelease;
     }
-
-
 
 }

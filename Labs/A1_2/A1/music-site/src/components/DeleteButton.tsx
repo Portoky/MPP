@@ -1,12 +1,13 @@
 interface DeleteButtonProps {
   onClick: () => void;
+  text: string;
 }
 
-const DeleteButton = ({ onClick }: DeleteButtonProps) => {
+const DeleteButton = ({ onClick, text }: DeleteButtonProps) => {
   return (
     <>
       <button type="button" className="btn btn-danger" onClick={onClick}>
-        Delete
+        {text}
       </button>
     </>
   );
