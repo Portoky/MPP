@@ -1,4 +1,3 @@
-import React from "react";
 import { ArtistContext } from "../../context/ArtistContext";
 import { useContext, useState } from "react";
 import axios from "axios";
@@ -7,25 +6,40 @@ import DeleteButton from "../DeleteButton";
 import Alert from "../Alert";
 import { elementsByPage } from "../../utils/Utils";
 import { MusicContext } from "../../context/MusicContext";
+import { ConnectionContext } from "../../context/ConnectionContext";
+import { db } from "../../db/db";
 interface ListGroupArtistProps {
   page: number;
 }
 
 const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
   const { artists, setArtists } = useContext(ArtistContext);
-  const { musics, setMusics } = useContext(MusicContext);
-
+  const { musics } = useContext(MusicContext);
+  const { setMusics } = useContext(MusicContext);
+  const { isConnection } = useContext(ConnectionContext);
   const [indexToDelete, setIndexToDelete] = useState(-1);
 
   if (artists.length === 0) {
     return <p>No item found!</p>;
   }
 
-  const onDeleteClick = (selectedIndex: number) => {
-    setIndexToDelete(selectedIndex);
+  const deleteFromLocalDb = async () => {
+    try {
+      await db.artists.delete(artists[indexToDelete].artistId);
+      //deleting associated musics
+      const artistMusics = musics.filter((musics) => {
+        return musics.artistId === artists[indexToDelete].artistId;
+      });
+      artistMusics.forEach(async (music) => {
+        await db.musics.delete(music.musicId);
+      });
+      setArtists([]); // it is for telling the useEffect that there is a change not so nice but whatever
+    } catch (error) {
+      console.log("Couldnt update artist in local repo");
+    }
   };
 
-  const doDeletion = async () => {
+  const deleteFromServerDb = async () => {
     await axios
       .delete(
         "http://localhost:8080/artist/delete/" + artists[indexToDelete].artistId
@@ -36,9 +50,6 @@ const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
       .catch((err) => {
         console.log(err.message);
       });
-
-    setIndexToDelete(-1);
-
     //we need to refetch the elements so the list is updated
     await axios
       .get("http://localhost:8080/artist")
@@ -56,6 +67,21 @@ const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
       .catch((error) => {
         alert(error.message + ". Server might be down.");
       });
+  };
+
+  const onDeleteClick = (selectedIndex: number) => {
+    setIndexToDelete(selectedIndex);
+  };
+
+  const doDeletion = async () => {
+    if (isConnection === false) {
+      //in case of no server connection
+      deleteFromLocalDb();
+      setIndexToDelete(-1);
+      return;
+    }
+    deleteFromServerDb();
+    setIndexToDelete(-1);
   };
 
   const noDeletion = () => {

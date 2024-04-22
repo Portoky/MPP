@@ -1,9 +1,15 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useContext } from "react";
 import { useState } from "react";
 import "../../assets/AddMusic.css";
 import { useNavigate } from "react-router-dom";
+import { ConnectionContext } from "../../context/ConnectionContext";
+import { db } from "../../db/db";
+import { useLiveQuery } from "dexie-react-hooks";
+import { ArtistContext } from "../../context/ArtistContext";
 
 const AddArtist = () => {
+  const { isConnection } = useContext(ConnectionContext);
+  const { artists, setArtists } = useContext(ArtistContext);
   const [name, setName] = useState("");
   const [biography, setBiography] = useState("");
   const navigate = useNavigate();
@@ -17,12 +23,27 @@ const AddArtist = () => {
     setBiography(event.target.value);
   }
 
-  async function handleAddButtonClick() {
-    if (name === "" || biography === "") {
-      alert("Invalid Arist!");
-      return;
-    }
+  const addToLocalDb = async () => {
+    const postData = {
+      name,
+      biography,
+      musicList: [],
+    };
 
+    try {
+      await db.artists.add(postData).then((id) => {
+        const artistsList = artists;
+        const artistId = id;
+        artistsList.push({ artistId, name, biography, musicList: [] });
+        setArtists(artistsList);
+      });
+      navigate("/");
+    } catch (error) {
+      console.log("Couldnt save artist in local repo");
+    }
+  };
+
+  const addToServerDb = async () => {
     const postData = {
       name: name,
       biography: biography,
@@ -36,12 +57,25 @@ const AddArtist = () => {
       },
     })
       .then((response) => response.json())
-      .then((data) => {
+      .then(() => {
         navigate("/");
       })
       .catch((err) => {
         alert(err.message);
       });
+  };
+  async function handleAddButtonClick() {
+    if (name === "" || biography === "") {
+      alert("Invalid Arist!");
+      return;
+    }
+    //If no connection to DB!!
+    if (isConnection === false) {
+      //working!!
+      addToLocalDb();
+      return;
+    }
+    addToServerDb();
   }
 
   return (

@@ -1,6 +1,5 @@
 import { ChangeEvent } from "react";
 import { Music } from "../../entities/Music";
-import { Artist } from "../../entities/Artist";
 import Rating from "@mui/material/Rating";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useContext } from "react";
@@ -8,10 +7,13 @@ import { MusicContext } from "../../context/MusicContext";
 import { ArtistContext } from "../../context/ArtistContext";
 import "../../assets/EditMusic.css";
 import Select from "react-select";
+import { ConnectionContext } from "../../context/ConnectionContext";
+import { db } from "../../db/db";
 
 const EditMusic = () => {
-  const { musics, setMusics } = useContext(MusicContext);
-  const { artists, setArtists } = useContext(ArtistContext);
+  const { musics } = useContext(MusicContext);
+  const { artists } = useContext(ArtistContext);
+  const { isConnection } = useContext(ConnectionContext);
   const navigate = useNavigate();
 
   const param = useParams();
@@ -26,21 +28,20 @@ const EditMusic = () => {
     return <p>Element not found!</p>;
   }
 
-  console.log(musicIndex);
-
-  const [artist, setArtist] = useState<Artist | null>(null);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [artistId, setArtistId] = useState(-1);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [title, setTitle] = useState(newMusics[musicIndex].title);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [rating, setRating] = useState(newMusics[musicIndex].rating);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [yearOfRelease, setYearOfRelease] = useState(
     newMusics[musicIndex].yearOfRelease
   );
 
   const handleArtist = (opt) => {
     const artistId = opt.value;
-    const newArtist = artists.find((artist: Artist) => {
-      return artistId === artist.artistId;
-    });
-    if (newArtist != null) setArtist(newArtist);
+    setArtistId(artistId);
   };
 
   const handleTitle = (event: ChangeEvent<HTMLInputElement>) => {
@@ -52,17 +53,22 @@ const EditMusic = () => {
     setYearOfRelease(isNaN(inputNumber) ? -1 : inputNumber);
   };
 
-  const handleEditButtonClick = async () => {
-    if (
-      title == "" ||
-      artist == null ||
-      yearOfRelease > 2024 ||
-      yearOfRelease < 1000
-    ) {
-      alert("Invalid Music!");
-      return;
+  const updateLocalDb = async () => {
+    const postData = {
+      title,
+      artistId,
+      rating,
+      yearOfRelease,
+    };
+    try {
+      db.musics.update(musicId, postData);
+      navigate("/");
+    } catch (error) {
+      console.log("Couldnt update artist in local repo");
     }
+  };
 
+  const updateServerDb = async () => {
     const postData = {
       title: title,
       rating: rating,
@@ -72,7 +78,7 @@ const EditMusic = () => {
       "http://localhost:8080/music/edit/" +
         stringmusicId +
         "/artist/" +
-        artist.artistId,
+        artistId,
       {
         method: "PUT",
         body: JSON.stringify(postData),
@@ -82,12 +88,29 @@ const EditMusic = () => {
       }
     )
       .then((response) => response.json())
-      .then((data) => {
+      .then(() => {
         navigate("/");
       })
       .catch((err) => {
         alert(err.message);
       });
+  };
+
+  const handleEditButtonClick = async () => {
+    if (
+      title === "" ||
+      artistId === -1 ||
+      yearOfRelease > 2024 ||
+      yearOfRelease < 1000
+    ) {
+      alert("Invalid Music!");
+      return;
+    }
+    if (isConnection === false) {
+      updateLocalDb();
+      return;
+    }
+    updateServerDb();
   };
 
   const artistOptions: { label: string; value: number }[] = [];

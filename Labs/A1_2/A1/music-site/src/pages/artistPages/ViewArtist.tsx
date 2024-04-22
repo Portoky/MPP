@@ -5,10 +5,14 @@ import { Artist } from "../../entities/Artist";
 import { Music } from "../../entities/Music";
 import "../../assets/ViewMusic.css";
 import axios from "axios";
+import { ConnectionContext } from "../../context/ConnectionContext";
+import { MusicContext } from "../../context/MusicContext";
 
 const ViewArtist = () => {
-  const { artists, setArtists } = useContext(ArtistContext);
-  const [artistMusic, setArtistMusic] = useState([]);
+  const { artists } = useContext(ArtistContext);
+  const { musics } = useContext(MusicContext);
+  const { isConnection } = useContext(ConnectionContext);
+  const [artistMusic, setArtistMusic] = useState<Music[]>([]);
 
   const param = useParams();
   const stringartistId = param["id"] || "-1";
@@ -16,15 +20,23 @@ const ViewArtist = () => {
   const artistIndex = artists.findIndex((artist: Artist) => {
     return artist.artistId === artistId;
   });
+
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/music/artist/" + artistId)
-      .then((response) => {
-        setArtistMusic(response.data);
-      })
-      .catch((error) => {
-        alert(error.message + ". Server might be down.");
-      });
+    if (isConnection === false) {
+      const filteredMusics: Music[] = musics.filter(
+        (music) => music.artistId === artistId
+      );
+      setArtistMusic(filteredMusics);
+    } else {
+      axios
+        .get("http://localhost:8080/music/artist/" + artistId)
+        .then((response) => {
+          setArtistMusic(response.data);
+        })
+        .catch((error) => {
+          alert(error.message + ". Server might be down.");
+        });
+    }
   }, []);
   return (
     <>

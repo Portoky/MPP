@@ -5,10 +5,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 public class MusicDto {
+    private Long musicId;
+
     private String title;
     private Integer rating;
     private Integer yearOfRelease;
     private Long artistId;
+
+    public MusicDto(Long musicId, String title, Integer rating, Integer yearOfRelease, Long artistId) {
+        this.musicId = musicId;
+        this.title = title;
+        this.rating = rating;
+        this.yearOfRelease = yearOfRelease;
+        this.artistId = artistId;
+    }
 
     public String getTitle() {
         return title;
@@ -40,5 +50,12 @@ public class MusicDto {
 
     public void setArtistId(Long artistId) {
         this.artistId = artistId;
+    }
+
+    public Long getMusicId() {
+        return musicId;
+    }
+    public void setMusicId(Long musicId) {
+        this.musicId = musicId;
     }
 }

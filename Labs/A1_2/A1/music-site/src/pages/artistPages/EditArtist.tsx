@@ -3,9 +3,12 @@ import { ArtistContext } from "../../context/ArtistContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { Artist } from "../../entities/Artist";
 import "../../assets/EditMusic.css";
+import { ConnectionContext } from "../../context/ConnectionContext";
+import { db } from "../../db/db";
 
 const EditArtist = () => {
-  const { artists, setArtists } = useContext(ArtistContext);
+  const { artists } = useContext(ArtistContext);
+  const { isConnection } = useContext(ConnectionContext);
   const navigate = useNavigate();
 
   const param = useParams();
@@ -20,7 +23,9 @@ const EditArtist = () => {
     return <p>Element not found!</p>;
   }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [name, setName] = useState(newArtists[artistIndex].name);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [biography, setBiography] = useState(newArtists[artistIndex].biography);
 
   function handleName(event: ChangeEvent<HTMLInputElement>): void {
@@ -30,12 +35,21 @@ const EditArtist = () => {
   function handleBiography(event: ChangeEvent<HTMLInputElement>): void {
     setBiography(event.target.value);
   }
-  const handleEditButtonClick = async () => {
-    if (name === "" || biography === "") {
-      alert("Invalid Music!");
-      return;
-    }
 
+  const updateLocalDb = async () => {
+    const postData = {
+      name,
+      biography,
+    };
+    try {
+      db.artists.update(artistId, postData);
+      navigate("/");
+    } catch (error) {
+      console.log("Couldnt update artist in local repo");
+    }
+  };
+
+  const updateServerDb = async () => {
     const postData = {
       name: name,
       biography: biography,
@@ -48,13 +62,26 @@ const EditArtist = () => {
       },
     })
       .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+      .then(() => {
         navigate("/");
       })
       .catch((err) => {
         alert(err.message);
       });
+  };
+
+  const handleEditButtonClick = async () => {
+    if (name === "" || biography === "") {
+      alert("Invalid Music!");
+      return;
+    }
+
+    if (isConnection === false) {
+      //working!!
+      updateLocalDb();
+      return;
+    }
+    updateServerDb();
   };
   return (
     <>

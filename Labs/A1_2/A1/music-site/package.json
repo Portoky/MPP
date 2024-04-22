@@ -21,6 +21,8 @@
     "@stomp/stompjs": "^7.0.0",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
+    "dexie": "^4.0.4",
+    "dexie-react-hooks": "^1.1.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1",

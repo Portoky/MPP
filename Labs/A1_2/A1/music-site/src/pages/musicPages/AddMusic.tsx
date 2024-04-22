@@ -5,24 +5,22 @@ import "../../assets/AddMusic.css";
 import { MusicRating } from "../../entities/Music";
 import { useNavigate } from "react-router-dom";
 import { ArtistContext } from "../../context/ArtistContext";
-import { Artist } from "../../entities/Artist";
 import Select from "react-select";
+import { ConnectionContext } from "../../context/ConnectionContext";
+import { db } from "../../db/db";
 
 const AddMusic = () => {
   const [title, setTitle] = useState("");
   const [rating, setRating] = useState(MusicRating.ONESTAR);
   const [yearOfRelease, setYearOfRelease] = useState(-1);
-  const [artist, setArtist] = useState<Artist | null>(null);
+  const [artistId, setArtistId] = useState(-1);
   const navigate = useNavigate();
-  const { artists, setArtists } = useContext(ArtistContext);
+  const { artists } = useContext(ArtistContext);
+  const { isConnection } = useContext(ConnectionContext);
 
   const handleArtist = (opt) => {
     const artistId = opt.value;
-    const newArtist = artists.find((artist: Artist) => {
-      return artistId === artist.artistId;
-    });
-    if (newArtist != null) setArtist(newArtist);
-    console.log(artist);
+    setArtistId(artistId);
   };
 
   const handleTitle = (event: ChangeEvent<HTMLInputElement>) => {
@@ -34,24 +32,47 @@ const AddMusic = () => {
     setYearOfRelease(isNaN(inputNumber) ? -1 : inputNumber);
   };
 
-  const handleAddButtonClick = async () => {
-    if (
-      title === "" ||
-      artist === null ||
-      yearOfRelease > 2024 ||
-      yearOfRelease < 1000
-    ) {
-      alert("Invalid Music!");
-      return;
+  const updateLocalDb = async () => {
+    const postData = {
+      title,
+      artistId,
+      rating,
+      yearOfRelease,
+    };
+    try {
+      const id = await db.musics.add(postData);
+      //updateting the artistMusicList too!
+      const artistToAddMusic = await db.artists.get(artistId);
+      if (artistToAddMusic) {
+        const musicToAdd = await db.musics.get(id);
+        if (musicToAdd) {
+          artistToAddMusic.musicList.push(musicToAdd);
+          const name = artistToAddMusic.name;
+          const biography = artistToAddMusic.biography;
+          const musicList = artistToAddMusic.musicList;
+          const updateData = {
+            name,
+            biography,
+            musicList,
+          };
+          await db.artists.update(artistId, updateData);
+        }
+      }
+      console.log(id);
+      navigate("/");
+    } catch (error) {
+      console.log("Couldnt save music in local repo");
     }
+    return;
+  };
 
-    //sending a POST request
+  const updateServerDb = async () => {
     const postData = {
       title: title,
       rating: rating,
       yearOfRelease: yearOfRelease,
     };
-    await fetch("http://localhost:8080/music/add/" + artist.artistId, {
+    await fetch("http://localhost:8080/music/add/" + artistId, {
       method: "POST",
       body: JSON.stringify(postData),
       headers: {
@@ -59,7 +80,7 @@ const AddMusic = () => {
       },
     })
       .then((response) => response.json())
-      .then((data) => {
+      .then(() => {
         navigate("/");
       })
       .catch((err) => {
@@ -67,12 +88,33 @@ const AddMusic = () => {
       });
   };
 
+  const handleAddButtonClick = async () => {
+    if (
+      title === "" ||
+      artistId === -1 ||
+      yearOfRelease > 2024 ||
+      yearOfRelease < 1000
+    ) {
+      alert("Invalid Music!");
+      return;
+    }
+
+    //If no connection to DB!!
+    if (isConnection === false) {
+      //working!!
+      updateLocalDb();
+      return;
+    }
+    //else
+    //sending a POST request
+    updateServerDb();
+  };
+
   //options
   const artistOptions: { label: string; value: number }[] = [];
   artists.forEach((artist) => {
     artistOptions.push({ label: artist.name, value: artist.artistId });
   });
-
   return (
     <>
       <h2>Add music information</h2>

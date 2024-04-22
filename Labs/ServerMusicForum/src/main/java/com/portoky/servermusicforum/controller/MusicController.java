@@ -1,5 +1,6 @@
 package com.portoky.servermusicforum.controller;
 
+import com.portoky.servermusicforum.dto.MusicDto;
 import com.portoky.servermusicforum.entity.Artist;
 import com.portoky.servermusicforum.entity.Music;
 import com.portoky.servermusicforum.exception.ArtistNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("http://localhost:3030")
@@ -34,16 +36,21 @@ public class MusicController {
     }
 
     @GetMapping("/music")
-    List<Music> all(){
-        List<Music> result = musicRepository.findAll();
-        return musicRepository.findAll();
+    List<MusicDto> all(){
+        List<MusicDto> result =
+                musicRepository.findAll().stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId())
+                ).collect(Collectors.toList());
+        return result;
     }
     @GetMapping("/music/artist/{id}") //returns all the music of an artist
-    List<Music> artistMusics(@PathVariable("id") Long id){
-        return musicRepository.findByArtistArtistId(id); //its like a query where artist.artistId = id
+    List<MusicDto> artistMusics(@PathVariable("id") Long id){
+        List<MusicDto> result =
+         musicRepository.findByArtistArtistId(id).stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId())
+         ).collect(Collectors.toList()); //its like a query where artist.artistId = id
+        return result;
     }
     @PostMapping("/music/add/{id}")
-    Music newMusic(@RequestBody Music newMusic, @PathVariable("id") Long id){ //artistId
+    MusicDto newMusic(@RequestBody Music newMusic, @PathVariable("id") Long id){ //artistId
         try{
 
             Optional<Artist> optionalArtist = artistRepository.findById(Long.valueOf(id));
@@ -54,22 +61,23 @@ public class MusicController {
             MusicValidator.validate(newMusic);
 
             artistTemp.getMusicList().add(newMusic);
-            return musicRepository.save(newMusic);
-
+            musicRepository.save(newMusic);
+            return new MusicDto(newMusic.getMusicId(), newMusic.getTitle(), newMusic.getRating(), newMusic.getYearOfRelease(), id);
         }catch (InvalidMusicException ex){
             System.out.println(ex.getMessage());
-            return new Music("Invalid", -1, -1);
+            return new MusicDto(Long.valueOf(1), "", -1, -1, Long.valueOf(1));
         }
     }
 
     @GetMapping("/music/view/{musicId}")
-    Music one(@PathVariable Long musicId) throws MusicNotFoundException {
+    MusicDto one(@PathVariable Long musicId) throws MusicNotFoundException {
 
-        return musicRepository.findById(musicId).orElseThrow(() -> new MusicNotFoundException(musicId));
+        Music music = musicRepository.findById(musicId).orElseThrow(() -> new MusicNotFoundException(musicId));
+        return new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), musicId);
     }
 
     @PutMapping("/music/edit/{musicId}/artist/{artistId}")
-    Music replaceMusic(@RequestBody Music newMusic, @PathVariable Long musicId, @PathVariable Long artistId){
+    MusicDto replaceMusic(@RequestBody Music newMusic, @PathVariable Long musicId, @PathVariable Long artistId){
         try{
 
             return musicRepository.findById(musicId).map(music -> {
@@ -87,11 +95,12 @@ public class MusicController {
 
                 MusicValidator.validate(music);
 
-                return musicRepository.save(music);
+                 musicRepository.save(music);
+                 return new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), musicId);
             }).orElseThrow(() -> new MusicNotFoundException(musicId));
         }catch(InvalidMusicException ex){
             System.out.println(ex.getMessage());
-            return new Music("Invalid Music", 0, -1);
+            return new MusicDto(1L, "", -1, -1, 1L);
         }
     }
 

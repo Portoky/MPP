@@ -5,22 +5,30 @@ import { MusicContext } from "../../context/MusicContext";
 import { useContext } from "react";
 import { Music } from "../../entities/Music";
 import "../../assets/ViewMusic.css";
+import { ArtistContext } from "../../context/ArtistContext";
 
 const ViewMusic = () => {
-  const { musics, setMusics } = useContext(MusicContext);
+  const { musics } = useContext(MusicContext);
+  const { artists } = useContext(ArtistContext);
 
+  //get the id from the url
   const param = useParams();
   const stringmusicId = param["id"] || "-1";
   const musicId = parseInt(stringmusicId);
   const musicIndex = musics.findIndex((music: Music) => {
     return music.musicId === musicId;
   });
+  //get artist of music
+  const musicArtist = artists.find((artist) => {
+    console.log(musics[musicIndex]);
+    return artist.artistId === musics[musicIndex].artistId;
+  });
   return (
     <>
       <h2>View music information with serialNumber -&gt; {musicId}</h2>
       <div className="viewInfo">
         <p>Serial Id: {musics[musicIndex].musicId}</p>
-        <p>Band Name: {musics[musicIndex].artist.name}</p>
+        <p>Band Name: {musicArtist?.name}</p>
         <p>Song Title: {musics[musicIndex].title}</p>
         <p>
           Rating:{" "}
