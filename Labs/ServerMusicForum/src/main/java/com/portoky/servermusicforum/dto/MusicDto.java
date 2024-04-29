@@ -6,7 +6,6 @@ import jakarta.persistence.Id;
 
 public class MusicDto {
     private Long musicId;
-
     private String title;
     private Integer rating;
     private Integer yearOfRelease;

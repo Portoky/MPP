@@ -11,12 +11,15 @@ import com.portoky.servermusicforum.repository.MusicRepository;
 import com.portoky.servermusicforum.validator.MusicValidator;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,6 +37,20 @@ public class MusicController {
         this.musicRepository = musicRepository;
         this.artistRepository = artistRepository;
     }
+    @GetMapping("/musicpage")
+    ResponseEntity<List<MusicDto>> allForPage(@RequestParam Integer offset, @RequestParam Integer page){
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("length", String.valueOf(musicRepository.count()));
+        try {
+            List<MusicDto> result =
+                    musicRepository.findAll().stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId())
+                    ).toList().subList((page - 1) * offset, page * offset);
+            return ResponseEntity.ok().headers(responseHeaders).body(result);
+            }catch (IndexOutOfBoundsException ex){
+                return ResponseEntity.ok().headers(responseHeaders).body(new ArrayList<MusicDto>());
+        }
+
+    }
 
     @GetMapping("/music")
     List<MusicDto> all(){
@@ -42,12 +59,30 @@ public class MusicController {
                 ).collect(Collectors.toList());
         return result;
     }
-    @GetMapping("/music/artist/{id}") //returns all the music of an artist
-    List<MusicDto> artistMusics(@PathVariable("id") Long id){
-        List<MusicDto> result =
-         musicRepository.findByArtistArtistId(id).stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId())
-         ).collect(Collectors.toList()); //its like a query where artist.artistId = id
-        return result;
+    @GetMapping("/music/artist/{id}") //returns all the music of an artist --> not all only some of it!
+    List<MusicDto> artistMusics(@PathVariable("id") Long id, @RequestParam Integer offset, @RequestParam Integer page){
+        try {
+            List<MusicDto> result =
+                    musicRepository.findByArtistArtistId(id).stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId())
+                    ).collect(Collectors.toList()).subList((page - 1) * offset, page * offset); //its like a query where artist.artistId = id1}, pagination
+            return result;
+        }catch (IndexOutOfBoundsException ex){
+            return new ArrayList<MusicDto>(); //return it empty
+        }
+
+    }
+
+    @PostMapping("/generate/{id}")
+    void generateRandomMusic(@PathVariable("id") Long artistId){
+        Faker faker = new Faker();
+        Optional<Artist> optionalArtist = artistRepository.findById(Long.valueOf(artistId));
+        Artist artistTemp = optionalArtist.orElseThrow(() -> new ArtistNotFoundException(Long.valueOf(artistId)));
+
+        for(int i = 0; i < 100; ++i){
+            Music newMusic = new Music(faker.book().title(), faker.number().numberBetween(1,5), faker.number().numberBetween(1970, 2024));
+            newMusic.setArtist(artistTemp);
+            musicRepository.save(newMusic);
+        }
     }
     @PostMapping("/music/add/{id}")
     MusicDto newMusic(@RequestBody Music newMusic, @PathVariable("id") Long id){ //artistId

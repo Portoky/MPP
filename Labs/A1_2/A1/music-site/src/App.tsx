@@ -10,44 +10,47 @@ import AddArtist from "./pages/artistPages/AddArtist";
 import EditArtist from "./pages/artistPages/EditArtist";
 import ViewArtist from "./pages/artistPages/ViewArtist";
 import { ConnectionProvider } from "./context/ConnectionContext";
+import { TrackCountProvider } from "./context/TrackCountContext";
 
 const App = () => {
   return (
     <div>
       <ConnectionProvider>
-        <MusicProvider>
-          <ArtistProvider>
-            {" "}
-            {/*this is how we provide the props now globally with context*/}
-            <BrowserRouter>
-              <Routes>
-                <Route
-                  path="/" /*id show the which elements to show */
-                  element={<Home></Home>}
-                />
-                <Route
-                  path="/music/edit/:id"
-                  element={<EditMusic></EditMusic>}
-                />
-                <Route
-                  path="/music/view/:id"
-                  element={<ViewMusic></ViewMusic>}
-                />
-                <Route path="/music/add" element={<AddMusic></AddMusic>} />
-                <Route path="/diagram" element={<Diagram></Diagram>} />
-                <Route
-                  path="/artist/edit/:id"
-                  element={<EditArtist></EditArtist>}
-                />
-                <Route
-                  path="/artist/view/:id"
-                  element={<ViewArtist></ViewArtist>}
-                />
-                <Route path="/artist/add" element={<AddArtist></AddArtist>} />
-              </Routes>
-            </BrowserRouter>
-          </ArtistProvider>
-        </MusicProvider>
+        <TrackCountProvider>
+          <MusicProvider>
+            <ArtistProvider>
+              {" "}
+              {/*this is how we provide the props now globally with context*/}
+              <BrowserRouter>
+                <Routes>
+                  <Route
+                    path="/" /*id show the which elements to show */
+                    element={<Home></Home>}
+                  />
+                  <Route
+                    path="/music/edit/:id"
+                    element={<EditMusic></EditMusic>}
+                  />
+                  <Route
+                    path="/music/view/:id"
+                    element={<ViewMusic></ViewMusic>}
+                  />
+                  <Route path="/music/add" element={<AddMusic></AddMusic>} />
+                  <Route path="/diagram" element={<Diagram></Diagram>} />
+                  <Route
+                    path="/artist/edit/:id"
+                    element={<EditArtist></EditArtist>}
+                  />
+                  <Route
+                    path="/artist/view/:id"
+                    element={<ViewArtist></ViewArtist>}
+                  />
+                  <Route path="/artist/add" element={<AddArtist></AddArtist>} />
+                </Routes>
+              </BrowserRouter>
+            </ArtistProvider>
+          </MusicProvider>
+        </TrackCountProvider>
       </ConnectionProvider>
     </div>
   );

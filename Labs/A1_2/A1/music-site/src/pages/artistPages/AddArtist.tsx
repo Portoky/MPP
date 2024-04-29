@@ -13,7 +13,6 @@ const AddArtist = () => {
   const [name, setName] = useState("");
   const [biography, setBiography] = useState("");
   const navigate = useNavigate();
-  //const [musicTracks, setMusicTracks] = useState([]);
 
   const handleName = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -56,7 +55,6 @@ const AddArtist = () => {
         "Content-type": "application/json; charset=UTF-8",
       },
     })
-      .then((response) => response.json())
       .then(() => {
         navigate("/");
       })

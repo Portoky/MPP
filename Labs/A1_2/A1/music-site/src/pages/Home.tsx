@@ -15,6 +15,7 @@ import { db } from "../db/db";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Artist } from "../entities/Artist";
 import { Music } from "../entities/Music";
+import { TrackCountContext } from "../context/TrackCountContext";
 
 async function synchronizeArtistsThenMusic(artists: Artist[]) {
   artists.forEach(async (artist: Artist) => {
@@ -61,10 +62,36 @@ const Home = () => {
   const { musics, setMusics } = useContext(MusicContext);
   const { artists, setArtists } = useContext(ArtistContext);
   const { isConnection, setIsConnection } = useContext(ConnectionContext);
+  const { trackCountDict, setTrackCountDict } = useContext(TrackCountContext);
+
+  const [filter, setFilter] = useState("");
+  const [musicPage, setMusicPage] = useState(1);
+  const [artistPage, setArtistPage] = useState(1);
+  const handlefilterChage = (event: ChangeEvent<HTMLInputElement>) => {
+    setFilter(event.target.value);
+  };
+
   window.addEventListener("offline", () => {
     alert("You went offline! Check internet connection");
   });
-
+  const getArtistMusicCount = async (artistId?: number) => {
+    if (isConnection === false) {
+      return musics.filter((music) => music.artistId === artistId).length;
+    } else {
+      axios
+        .get("http://localhost:8080/artist/view/count/" + artistId)
+        .then((response) => {
+          setTrackCountDict((prevTrackCountDict) => ({
+            ...prevTrackCountDict,
+            [artistId]: response.data,
+          }));
+          return response.data;
+        })
+        .catch(() => {
+          return 0;
+        });
+    }
+  };
   //generated value saved
 
   /*we dont want to use websockets now
@@ -145,15 +172,17 @@ const Home = () => {
           setIsConnection(false); //means the server might be down, we use the instoragedb
         });
       db.deleteAll();
-    }
-  }, [artists, musics, isConnection]);
 
-  const [filter, setFilter] = useState("");
-  const [musicPage, setMusicPage] = useState(1);
-  const [artistPage, setArtistPage] = useState(1);
-  const handlefilterChage = (event: ChangeEvent<HTMLInputElement>) => {
-    setFilter(event.target.value);
-  };
+      axios
+        .get("http://localhost:8080/artist/view/count")
+        .then((response) => {
+          setTrackCountDict(response.data);
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    }
+  }, [isConnection]);
 
   //take the needed elements (depending on current page) from music list
   const musicsShown = musics.slice(
@@ -188,6 +217,7 @@ const Home = () => {
       </div>
       <div className="enitityList">
         <div className="ListGroupMusic">
+          <h3>Melodies:</h3>
           <div>
             <NavButton path="/music/add" className="btn btn-primary">
               Add Music
@@ -210,7 +240,7 @@ const Home = () => {
           <div className="paginationPart">
             <Pagination
               id="pagination"
-              count={Math.ceil(musics.length / 5)}
+              count={Math.ceil(musics.length / 6)}
               page={musicPage}
               onChange={handleMusicPagination}
             />
@@ -223,6 +253,7 @@ const Home = () => {
         </div>
         <div className="vertical-line"></div>
         <div className="ListGroupArtist">
+          <h3>Artists:</h3>
           <div>
             <NavButton path="/artist/add/" className="btn btn-primary">
               Add Artist
@@ -233,7 +264,7 @@ const Home = () => {
             <Pagination
               id="pagination"
               count={Math.ceil(artists.length / 5)}
-              page={musicPage}
+              page={artistPage}
               onChange={handleArtistPagination}
             />
             <br></br>

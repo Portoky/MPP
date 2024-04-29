@@ -10,24 +10,46 @@ import com.portoky.servermusicforum.repository.MusicRepository;
 import com.portoky.servermusicforum.validator.ArtistValidator;
 import com.portoky.servermusicforum.validator.MusicValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 @RestController
 @CrossOrigin("http://localhost:3030")
 //@CrossOrigin("")
 public class ArtistController {
     private final ArtistRepository artistRepository;
+    private final MusicRepository musicRepository;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
     @Autowired
-    public ArtistController(ArtistRepository artistRepository) {
+    public ArtistController(ArtistRepository artistRepository, MusicRepository musicRepository) {
         this.artistRepository = artistRepository;
+        this.musicRepository = musicRepository;
     }
 
+
+    @GetMapping("artistpage")
+    ResponseEntity<List<Artist>> allForPage(@RequestParam Integer offset, @RequestParam Integer page){
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("length", String.valueOf(artistRepository.count()));
+        try{
+            List<Artist> result = artistRepository.findAll().subList((page-1)*offset, page*offset);
+            return ResponseEntity.ok().headers(responseHeaders).body(result);
+        }catch (IndexOutOfBoundsException ex){
+            return ResponseEntity.ok().headers(responseHeaders).body(new ArrayList<Artist>());
+        }
+    }
+    @GetMapping("/artist/count")
+    Long count(){
+        return artistRepository.count();
+    }
     @GetMapping("/artist")
     List<Artist> all(){
         List<Artist> result = artistRepository.findAll();
@@ -50,17 +72,29 @@ public class ArtistController {
         return artistRepository.findById(artistId).orElseThrow(() -> new ArtistNotFoundException(artistId));
     }
 
+    @GetMapping("/artist/view/count/{artistId}")
+    Long countArtistMusics(@PathVariable Long artistId) throws ArtistNotFoundException {
+        Artist artist = artistRepository.findById(artistId).orElseThrow(() -> new ArtistNotFoundException(artistId));
+        Long result = musicRepository.findAll().stream().filter(music -> music.getArtist().getArtistId() == artistId).count();
+        return result;
+    }
+    @GetMapping("/artist/view/count")
+    HashMap<Long, Long> countAllArtistsMusic(){
+        HashMap<Long, Long>artistMusicCountHashMap = new HashMap<>();
+        artistRepository.findAll().stream().forEach(artist -> {
+            Long count = musicRepository.findAll().stream().filter(music -> music.getArtist().getArtistId() == artist.getArtistId()).count();
+            artistMusicCountHashMap.put(artist.getArtistId(), count);
+        });
+        return artistMusicCountHashMap;
+
+    }
+
     @PutMapping("/artist/edit/{artistId}")
     Artist replaceArtist(@RequestBody Artist newArtist, @PathVariable Long artistId) {
         try {
-
             return artistRepository.findById(artistId).map(artist -> {
                 artist.setName(newArtist.getName());
                 artist.setBiography(newArtist.getBiography());
-                //we do not change the music list sorry
-                //artist.getMusicList().forEach(music -> {music.setArtist(null);});
-                //artist.setMusicList(newArtist.getMusicList());
-                //artist.getMusicList().forEach(music -> {music.setArtist(artist);});
                 ArtistValidator.validate(artist);
                 return artistRepository.save(artist);
             }).orElseThrow(() -> new MusicNotFoundException(artistId));

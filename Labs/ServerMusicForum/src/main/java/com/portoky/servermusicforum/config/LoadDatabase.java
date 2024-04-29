@@ -1,6 +1,7 @@
 package com.portoky.servermusicforum.config;
 
 import com.portoky.servermusicforum.entity.Artist;
+import com.portoky.servermusicforum.entity.Music;
 import com.portoky.servermusicforum.repository.ArtistRepository;
 import com.portoky.servermusicforum.repository.MusicRepository;
 import org.slf4j.Logger;
@@ -9,6 +10,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import net.datafaker.Faker;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 @Configuration
 public class LoadDatabase {
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
@@ -16,8 +22,11 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(ArtistRepository artistRepository, MusicRepository musicRepository) {
         Faker faker = new Faker();
-
         return args -> {
+            /*for(int i = 0; i < 2000; ++i){
+
+                musicRepository.save(new Music(faker.book().title(), faker.number().numberBetween(1, 5), faker.number().numberBetween(1970, 2000)));
+            }*/
             //Artist artist1 = artistRepository.save(new Artist("The Beatles", "balblabla"));
             /*Artist artist2 = artistRepository.save(new Artist("Pocsai Eszter", "balbadalabla"));
             Artist artist3 = artistRepository.save(new Artist("Beton Hofi", "balbladwabla"));*/

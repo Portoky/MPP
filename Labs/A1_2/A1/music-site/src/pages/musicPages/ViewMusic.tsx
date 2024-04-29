@@ -20,7 +20,6 @@ const ViewMusic = () => {
   });
   //get artist of music
   const musicArtist = artists.find((artist) => {
-    console.log(musics[musicIndex]);
     return artist.artistId === musics[musicIndex].artistId;
   });
   return (

@@ -8,6 +8,7 @@ import { elementsByPage } from "../../utils/Utils";
 import { MusicContext } from "../../context/MusicContext";
 import { ConnectionContext } from "../../context/ConnectionContext";
 import { db } from "../../db/db";
+import { TrackCountContext } from "../../context/TrackCountContext";
 interface ListGroupArtistProps {
   page: number;
 }
@@ -17,11 +18,17 @@ const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
   const { musics } = useContext(MusicContext);
   const { setMusics } = useContext(MusicContext);
   const { isConnection } = useContext(ConnectionContext);
+  const { trackCountDict } = useContext(TrackCountContext);
   const [indexToDelete, setIndexToDelete] = useState(-1);
 
   if (artists.length === 0) {
     return <p>No item found!</p>;
   }
+
+  const artistsOnThisPage = artists.slice(
+    (page - 1) * elementsByPage,
+    page * elementsByPage
+  );
 
   const deleteFromLocalDb = async () => {
     try {
@@ -38,6 +45,8 @@ const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
       console.log("Couldnt update artist in local repo");
     }
   };
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
 
   const deleteFromServerDb = async () => {
     await axios
@@ -88,10 +97,6 @@ const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
     setIndexToDelete(-1);
   };
 
-  const artistsOnThisPage = artists.slice(
-    (page - 1) * elementsByPage,
-    page * elementsByPage
-  );
   return (
     <>
       <ul data-testid="list" className="list-group">
@@ -103,6 +108,8 @@ const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
             {artist.name}
             <br></br>
             {artist.biography}
+            <br></br>
+            MusicTrack Counter: {trackCountDict[artist.artistId]}
             <br></br>
             <NavButton /*FOR EDIT*/
               path={"/artist/edit/" + artist.artistId}

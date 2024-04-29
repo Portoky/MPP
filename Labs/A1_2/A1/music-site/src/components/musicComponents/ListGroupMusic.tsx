@@ -84,8 +84,8 @@ const ListGroupMusic = ({ filter, page }: ListGroupMusicProps) => {
 
   //const totalElements = musics.length;
   const musicsOnThisPage = musics.slice(
-    (page - 1) * elementsByPage,
-    page * elementsByPage
+    (page - 1) * (elementsByPage + 1),
+    page * (elementsByPage + 1)
   );
   return (
     <>

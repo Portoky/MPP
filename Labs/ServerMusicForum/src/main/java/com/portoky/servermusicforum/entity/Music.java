@@ -28,6 +28,13 @@ public class Music {
         this.yearOfRelease = yearOfRelease;
     }
 
+    public Music(String title, Integer rating, Integer yearOfRelease, Artist artist) {
+        this.title = title;
+        this.rating = rating;
+        this.yearOfRelease = yearOfRelease;
+        this.artist = artist;
+    }
+
     @Override
     public String toString() {
         return "Music{" +
