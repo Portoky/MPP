@@ -2,18 +2,21 @@ import { ChangeEvent } from "react";
 import { Music } from "../../entities/Music";
 import Rating from "@mui/material/Rating";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { MusicContext } from "../../context/MusicContext";
 import { ArtistContext } from "../../context/ArtistContext";
 import "../../assets/EditMusic.css";
 import Select from "react-select";
 import { ConnectionContext } from "../../context/ConnectionContext";
 import { db } from "../../db/db";
+import axios from "axios";
+import { Artist } from "../../entities/Artist";
 
 const EditMusic = () => {
   const { musics } = useContext(MusicContext);
   const { artists } = useContext(ArtistContext);
   const { isConnection } = useContext(ConnectionContext);
+  const [artistName, setArtistName] = useState("");
   const navigate = useNavigate();
 
   const param = useParams();
@@ -24,6 +27,18 @@ const EditMusic = () => {
   const musicIndex = newMusics.findIndex((music: Music) => {
     return music.musicId === musicId;
   });
+
+  const artistOptions: { label: string; value: number }[] = [];
+  //options
+  useEffect(() => {
+    axios.get("http://localhost:8080/artist").then((response) => {
+      const allArtists = response.data;
+      allArtists.forEach((artist: Artist) => {
+        artistOptions.push({ label: artist.name, value: artist.artistId });
+      });
+    });
+  }, []);
+
   if (musicId === -1) {
     return <p>Element not found!</p>;
   }
@@ -42,6 +57,8 @@ const EditMusic = () => {
   const handleArtist = (opt) => {
     const artistId = opt.value;
     setArtistId(artistId);
+    const artistName = opt.label;
+    setArtistName(artistName);
   };
 
   const handleTitle = (event: ChangeEvent<HTMLInputElement>) => {
@@ -57,6 +74,7 @@ const EditMusic = () => {
     const postData = {
       title,
       artistId,
+      artistName,
       rating,
       yearOfRelease,
     };
@@ -113,10 +131,6 @@ const EditMusic = () => {
     updateServerDb();
   };
 
-  const artistOptions: { label: string; value: number }[] = [];
-  artists.forEach((artist) => {
-    artistOptions.push({ label: artist.name, value: artist.artistId });
-  });
   return (
     <>
       <h2>Edit music information with serialNumber -&gt; {musicId}</h2>

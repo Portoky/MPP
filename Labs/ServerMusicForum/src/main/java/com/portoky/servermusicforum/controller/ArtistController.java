@@ -1,5 +1,6 @@
 package com.portoky.servermusicforum.controller;
 
+import com.portoky.servermusicforum.dto.CountArtistMusicDto;
 import com.portoky.servermusicforum.entity.Artist;
 import com.portoky.servermusicforum.entity.Music;
 import com.portoky.servermusicforum.exception.ArtistNotFoundException;
@@ -19,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
-@CrossOrigin("http://localhost:3030")
-//@CrossOrigin("")
 public class ArtistController {
     private final ArtistRepository artistRepository;
     private final MusicRepository musicRepository;
@@ -38,9 +39,11 @@ public class ArtistController {
     @GetMapping("artistpage")
     ResponseEntity<List<Artist>> allForPage(@RequestParam Integer offset, @RequestParam Integer page){
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("length", String.valueOf(artistRepository.count()));
+        responseHeaders.set("allartistcount", String.valueOf(artistRepository.count()));
+        int pageSize = offset;
+        int currentOffset = offset*(page-1);
         try{
-            List<Artist> result = artistRepository.findAll().subList((page-1)*offset, page*offset);
+            List<Artist> result = artistRepository.findAllForPage(currentOffset, pageSize);
             return ResponseEntity.ok().headers(responseHeaders).body(result);
         }catch (IndexOutOfBoundsException ex){
             return ResponseEntity.ok().headers(responseHeaders).body(new ArrayList<Artist>());
@@ -81,9 +84,9 @@ public class ArtistController {
     @GetMapping("/artist/view/count")
     HashMap<Long, Long> countAllArtistsMusic(){
         HashMap<Long, Long>artistMusicCountHashMap = new HashMap<>();
-        artistRepository.findAll().stream().forEach(artist -> {
-            Long count = musicRepository.findAll().stream().filter(music -> music.getArtist().getArtistId() == artist.getArtistId()).count();
-            artistMusicCountHashMap.put(artist.getArtistId(), count);
+        List<CountArtistMusicDto> artistMusicCountPairs = artistRepository.countAllArtistsMusic();
+        artistMusicCountPairs.forEach(artistMusicCountPair->{
+            artistMusicCountHashMap.put(artistMusicCountPair.getArtistId(), artistMusicCountPair.getCount());
         });
         return artistMusicCountHashMap;
 

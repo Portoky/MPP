@@ -1,6 +1,6 @@
 import DeleteButton from "../DeleteButton";
 import { MusicContext } from "../../context/MusicContext";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import Alert from "../Alert";
 import axios from "axios";
 import { elementsByPage } from "../../utils/Utils";
@@ -8,18 +8,18 @@ import NavButton from "../NavButton";
 import { ArtistContext } from "../../context/ArtistContext";
 import { ConnectionContext } from "../../context/ConnectionContext";
 import { db } from "../../db/db";
+import { Artist } from "../../entities/Artist";
 
 interface ListGroupMusicProps {
   filter: string;
   page: number;
+  setPage: (page: number) => void;
 }
 
-const ListGroupMusic = ({ filter, page }: ListGroupMusicProps) => {
+const ListGroupMusic = ({ filter, page, setPage }: ListGroupMusicProps) => {
   const { musics, setMusics } = useContext(MusicContext);
-  const { artists } = useContext(ArtistContext);
   const [indexToDelete, setIndexToDelete] = useState(-1);
-  const { isConnection } = useContext(ConnectionContext);
-
+  const { isConnection, setIsConnection } = useContext(ConnectionContext);
   if (musics.length === 0) {
     return <p>No item found!</p>;
   }
@@ -27,7 +27,8 @@ const ListGroupMusic = ({ filter, page }: ListGroupMusicProps) => {
   const deleteFromLocalDb = async () => {
     try {
       await db.musics.delete(musics[indexToDelete].musicId);
-      setMusics([]); // it is for telling the useEffect that there is a change not so nice but whatever
+      setMusics(musics.splice(indexToDelete, 1)); // it is for telling the useEffect that there is a change not so nice but whatever
+      setIsConnection(false);
     } catch (error) {
       console.log("Couldnt update music in local repo");
     }
@@ -47,7 +48,9 @@ const ListGroupMusic = ({ filter, page }: ListGroupMusicProps) => {
 
     //we need to refetch the elements so the list is updated
     await axios
-      .get("http://localhost:8080/music")
+      .get("http://localhost:8080/musicpage", {
+        params: { offset: elementsByPage, page: page },
+      })
       .then((response) => {
         setMusics(response.data);
       })
@@ -83,26 +86,25 @@ const ListGroupMusic = ({ filter, page }: ListGroupMusicProps) => {
   }
 
   //const totalElements = musics.length;
-  const musicsOnThisPage = musics.slice(
-    (page - 1) * (elementsByPage + 1),
-    page * (elementsByPage + 1)
-  );
   return (
     <>
       <ul data-testid="list" className="list-group">
-        {musicsOnThisPage
+        {musics
           .filter((music) => {
             return filterFunction(filter, music.title);
           })
           .map((music, index) => (
             <li className={"list-group-item list-group-item-dark"} key={index}>
-              {(() => {
-                const artist = artists.find((artist) => {
+              {/*(() => {
+                const artist = currentPageArtists.find((artist) => {
                   return artist.artistId === music.artistId;
                 });
                 //console.log(music);
                 const artistName = artist ? artist.name : "Unknown Artist";
                 return `${artistName}: ${music.title} - ${music.yearOfRelease}`;
+              })()*/}
+              {(() => {
+                return `${music.artistName}: ${music.title} - ${music.yearOfRelease}`;
               })()}
               <br></br>
               <NavButton /*FOR EDIT*/

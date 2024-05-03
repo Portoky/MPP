@@ -10,15 +10,24 @@ public class MusicDto {
     private Integer rating;
     private Integer yearOfRelease;
     private Long artistId;
+    private String artistName;
 
-    public MusicDto(Long musicId, String title, Integer rating, Integer yearOfRelease, Long artistId) {
+    public MusicDto(Long musicId, String title, Integer rating, Integer yearOfRelease, Long artistId, String artistName) {
         this.musicId = musicId;
         this.title = title;
         this.rating = rating;
         this.yearOfRelease = yearOfRelease;
         this.artistId = artistId;
+        this.artistName = artistName;
     }
 
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
     public String getTitle() {
         return title;
     }

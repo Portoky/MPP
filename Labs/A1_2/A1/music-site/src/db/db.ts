@@ -11,7 +11,7 @@ export class MusicForumDexie extends Dexie {
   constructor() {
     super("MusicForum");
     this.version(2).stores({
-      musics: "++musicId, title, musicRating, yearOfRelease", // Primary key and indexed props
+      musics: "++musicId, artistName, title, musicRating, yearOfRelease", // Primary key and indexed props
       artists: "++artistId, name, biography, musicList",
     });
   }

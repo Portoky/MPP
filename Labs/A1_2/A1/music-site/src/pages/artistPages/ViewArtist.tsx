@@ -13,10 +13,13 @@ import "../../assets/ViewMusic.css";
 import axios from "axios";
 import { ConnectionContext } from "../../context/ConnectionContext";
 import { MusicContext } from "../../context/MusicContext";
+import { TrackCountContext } from "../../context/TrackCountContext";
+import { elementsByPage } from "../../utils/Utils";
 
 const ViewArtist = () => {
   const { artists } = useContext(ArtistContext);
   const { musics } = useContext(MusicContext);
+  const { trackCountDict } = useContext(TrackCountContext);
   const { isConnection } = useContext(ConnectionContext);
   const [artistMusic, setArtistMusic] = useState<Music[]>([]);
   const [artistMusicPage, setArtistMusicPage] = useState(1);
@@ -63,6 +66,8 @@ const ViewArtist = () => {
           setArtistMusic((prevArtistMusic) => {
             return [...new Set([...prevArtistMusic, ...response.data])];
           });
+          console.log(response.data);
+          console.log(artistMusic);
           setHasMore(response.data.length > 0);
           setLoading(false);
         })
@@ -96,7 +101,10 @@ const ViewArtist = () => {
         <p>Serial Id: {artists[artistIndex].artistId}</p>
         <p>Artist Name: {artists[artistIndex].name}</p>
         <p>Biography: {artists[artistIndex].biography}</p>
-        <p>Number of songs written by artist: {musicCount}</p>
+        <p>
+          Number of songs written by artist:{" "}
+          {trackCountDict[artists[artistIndex].artistId] || 0}
+        </p>
         <ul className="list-group">
           {artistMusic.length === 0 ? (
             <li className="list-group-item">

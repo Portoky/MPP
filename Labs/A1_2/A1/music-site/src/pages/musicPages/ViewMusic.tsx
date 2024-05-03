@@ -19,15 +19,12 @@ const ViewMusic = () => {
     return music.musicId === musicId;
   });
   //get artist of music
-  const musicArtist = artists.find((artist) => {
-    return artist.artistId === musics[musicIndex].artistId;
-  });
   return (
     <>
       <h2>View music information with serialNumber -&gt; {musicId}</h2>
       <div className="viewInfo">
         <p>Serial Id: {musics[musicIndex].musicId}</p>
-        <p>Band Name: {musicArtist?.name}</p>
+        <p>Band Name: {musics[musicIndex].artistName}</p>
         <p>Song Title: {musics[musicIndex].title}</p>
         <p>
           Rating:{" "}

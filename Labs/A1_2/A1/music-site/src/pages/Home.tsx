@@ -17,6 +17,35 @@ import { Artist } from "../entities/Artist";
 import { Music } from "../entities/Music";
 import { TrackCountContext } from "../context/TrackCountContext";
 
+//generated value saved
+
+/*we dont want to use websockets now
+  useEffect(() => {
+    const socket = new WebSocket("ws://localhost:8080/backend-socket");
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, () => {
+      stompClient.subscribe("/generatedmusic", (message) => {
+        const newMusic = JSON.parse(message.body);
+        // console.log(newMusic.musicId);
+        // if (!receivedIds.has(newMusic.musicId)) {
+        //   setMusics((oldMusics) => [...oldMusics, newMusic]);
+        //   setReceivedIds((oldRecievedIds) =>
+        //     new Set(oldRecievedIds).add(newMusic.musicId)
+        //   );
+        // }
+        axios
+          .get("http://localhost:8080/music")
+          .then((response) => {
+            setMusics(response.data);
+          })
+          .catch((error) => {
+            alert(error.message + ". Server might be down.");
+          });
+      });
+    });
+  }, []);*/
+
 async function synchronizeArtistsThenMusic(artists: Artist[]) {
   artists.forEach(async (artist: Artist) => {
     const artistPostData = {
@@ -59,21 +88,28 @@ async function synchronizeArtistsThenMusic(artists: Artist[]) {
   });
 }
 const Home = () => {
-  const { musics, setMusics } = useContext(MusicContext);
-  const { artists, setArtists } = useContext(ArtistContext);
+  const { musics, setMusics } = useContext(MusicContext); //current musics on this page
+  const { artists, setArtists } = useContext(ArtistContext); //current artists on this page
   const { isConnection, setIsConnection } = useContext(ConnectionContext);
-  const { trackCountDict, setTrackCountDict } = useContext(TrackCountContext);
 
+  //const [queryMusics, setQueryMusics] = useState([]);
+  //const [queryArtists, setQueryArtists] = useState([]);
+
+  const [musicsCount, setMusicsCount] = useState(0); //number of all musics
+  const [artistsCount, setArtistsCount] = useState(0); //number of all artists
+  const { setTrackCountDict } = useContext(TrackCountContext);
+  const [musicsShownCount, setMusicsShownCount] = useState(0);
+  const [artistsShownCount, setArtistsShownCount] = useState(0);
   const [filter, setFilter] = useState("");
   const [musicPage, setMusicPage] = useState(1);
   const [artistPage, setArtistPage] = useState(1);
   const handlefilterChage = (event: ChangeEvent<HTMLInputElement>) => {
     setFilter(event.target.value);
   };
-
   window.addEventListener("offline", () => {
     alert("You went offline! Check internet connection");
   });
+
   const getArtistMusicCount = async (artistId?: number) => {
     if (isConnection === false) {
       return musics.filter((music) => music.artistId === artistId).length;
@@ -92,39 +128,13 @@ const Home = () => {
         });
     }
   };
-  //generated value saved
-
-  /*we dont want to use websockets now
-  useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8080/backend-socket");
-    const stompClient = Stomp.over(socket);
-
-    stompClient.connect({}, () => {
-      stompClient.subscribe("/generatedmusic", (message) => {
-        const newMusic = JSON.parse(message.body);
-        // console.log(newMusic.musicId);
-        // if (!receivedIds.has(newMusic.musicId)) {
-        //   setMusics((oldMusics) => [...oldMusics, newMusic]);
-        //   setReceivedIds((oldRecievedIds) =>
-        //     new Set(oldRecievedIds).add(newMusic.musicId)
-        //   );
-        // }
-        axios
-          .get("http://localhost:8080/music")
-          .then((response) => {
-            setMusics(response.data);
-          })
-          .catch((error) => {
-            alert(error.message + ". Server might be down.");
-          });
-      });
-    });
-  }, []);*/
 
   //side effect just for checking if we have connection
   useEffect(() => {
     axios
-      .get("http://localhost:8080/music")
+      .get("http://localhost:8080/musicpage", {
+        params: { offset: elementsByPage, page: musicPage },
+      })
       .then(() => {
         setIsConnection(true); //checking if connection with server is still okay
       })
@@ -135,79 +145,117 @@ const Home = () => {
 
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //if connection with server is not made
-  const queryMusics =
+  /*let queryMusics =
     useLiveQuery(() => {
+      console.log("queryy");
       return db.musics.toArray();
     }) || []; //so it is not whining for undefined stuff
-  const queryArtists =
+  let queryArtists =
     useLiveQuery(() => {
       return db.artists.toArray();
     }) || []; //so it is not whining for undefined stuff
 
+    */
   useEffect(() => {
-    if (isConnection === false) {
-      //connection lost
-      setMusics(queryMusics);
-      setArtists(queryArtists);
-    } else {
-      //connection back, update server
-      synchronizeArtistsThenMusic(queryArtists);
+    /////
+    let queryArtists;
+    let queryMusics;
+    const fetchLocalDb = async () => {
+      queryMusics = await db.musics.toArray();
+      const musicsOnThisPage = queryMusics.slice(
+        (musicPage - 1) * elementsByPage,
+        musicPage * elementsByPage
+      );
+      queryArtists = await db.artists.toArray();
+      const artistsOnThisPage = queryArtists.slice(
+        (musicPage - 1) * elementsByPage,
+        musicPage * elementsByPage
+      );
+      setMusics(musicsOnThisPage);
+      setArtists(artistsOnThisPage);
+
+      setMusicsShownCount(
+        musics.slice(
+          (musicPage - 1) * elementsByPage,
+          musicPage * elementsByPage
+        ).length
+      );
+      setArtistsShownCount(
+        artists.slice(
+          (artistPage - 1) * elementsByPage,
+          artistPage * elementsByPage
+        ).length
+      );
+    };
+    const fetchServerDb = async () => {
+      queryArtists = db.artists.toArray();
+      synchronizeArtistsThenMusic(await queryArtists);
       axios
-        .get("http://localhost:8080/music")
+        .get("http://localhost:8080/musicpage", {
+          params: { offset: elementsByPage, page: musicPage },
+        })
         .then((response) => {
           setMusics(response.data);
+          setMusicsCount(parseInt(response.headers["allmusiccount"]));
           setIsConnection(true); //checking if connection with server is still okay
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log(error.message);
           setIsConnection(false); //means the server might be down, we use the instoragedb
         });
 
       axios
-        .get("http://localhost:8080/artist")
+        .get("http://localhost:8080/artistpage", {
+          params: { offset: elementsByPage, page: artistPage },
+        })
         .then((response) => {
           setArtists(response.data);
+          setArtistsCount(parseInt(response.headers["allartistcount"]));
           setIsConnection(true);
         })
         .catch(() => {
           setIsConnection(false); //means the server might be down, we use the instoragedb
         });
       db.deleteAll();
-
-      axios
-        .get("http://localhost:8080/artist/view/count")
-        .then((response) => {
-          setTrackCountDict(response.data);
-        })
-        .catch((error) => {
-          console.log(error.message);
-        });
+      setMusicsShownCount(musics.length);
+      setArtistsShownCount(artists.length);
+    };
+    /////
+    if (isConnection === false) {
+      //connection lost
+      fetchLocalDb();
+    } else {
+      //connection back, update server
+      fetchServerDb();
     }
-  }, [isConnection]);
+  }, [isConnection, artistPage, musicPage]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/artist/view/count")
+      .then((response) => {
+        setTrackCountDict(response.data);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  }, []);
 
   //take the needed elements (depending on current page) from music list
-  const musicsShown = musics.slice(
-    (musicPage - 1) * elementsByPage,
-    musicPage * elementsByPage
-  ).length;
-
-  const artistsShown = artists.slice(
-    (artistPage - 1) * elementsByPage,
-    artistPage * elementsByPage
-  ).length;
 
   //change page number thus elements shown
   const handleMusicPagination = (
     event: React.ChangeEvent<unknown>,
     page: number
   ) => {
-    if (page <= musics.length / 5 + 1) setMusicPage(page);
+    if (page <= musicsCount / 5 + 1) setMusicPage(page);
   };
 
   const handleArtistPagination = (
     event: React.ChangeEvent<unknown>,
     page: number
   ) => {
-    if (page <= artists.length / 5 + 1) setArtistPage(page);
+    if (page <= artistsCount / 5 + 1) setArtistPage(page);
   };
   return (
     <>
@@ -236,18 +284,22 @@ const Home = () => {
               placeholder="Filter by title!"
             ></input>
           </div>
-          <ListGroupMusic filter={filter} page={musicPage}></ListGroupMusic>
+          <ListGroupMusic
+            filter={filter}
+            page={musicPage}
+            setPage={setMusicPage}
+          ></ListGroupMusic>
           <div className="paginationPart">
             <Pagination
               id="pagination"
-              count={Math.ceil(musics.length / 6)}
+              count={Math.ceil(musicsCount / 5)}
               page={musicPage}
               onChange={handleMusicPagination}
             />
             <label>
               Showing from {(musicPage - 1) * elementsByPage + 1} to{" "}
-              {(musicPage - 1) * elementsByPage + musicsShown} out of{" "}
-              {musics.length}
+              {(musicPage - 1) * elementsByPage + musicsShownCount} out of{" "}
+              {musicsCount}
             </label>
           </div>
         </div>
@@ -259,19 +311,22 @@ const Home = () => {
               Add Artist
             </NavButton>{" "}
           </div>
-          <ListGroupArtist page={artistPage}></ListGroupArtist>{" "}
+          <ListGroupArtist
+            page={artistPage}
+            setPage={setArtistPage}
+          ></ListGroupArtist>{" "}
           <div className="paginationPart">
             <Pagination
               id="pagination"
-              count={Math.ceil(artists.length / 5)}
+              count={Math.ceil(artistsCount / 5)}
               page={artistPage}
               onChange={handleArtistPagination}
             />
             <br></br>
             <label>
               Showing from {(artistPage - 1) * elementsByPage + 1} to{" "}
-              {(artistPage - 1) * elementsByPage + artistsShown} out of{" "}
-              {artists.length}
+              {(artistPage - 1) * elementsByPage + artistsShownCount} out of{" "}
+              {artistsCount}
             </label>
           </div>
         </div>

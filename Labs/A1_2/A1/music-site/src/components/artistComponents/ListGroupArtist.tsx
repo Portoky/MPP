@@ -9,26 +9,24 @@ import { MusicContext } from "../../context/MusicContext";
 import { ConnectionContext } from "../../context/ConnectionContext";
 import { db } from "../../db/db";
 import { TrackCountContext } from "../../context/TrackCountContext";
+import { useNavigate } from "react-router-dom";
 interface ListGroupArtistProps {
   page: number;
+  setPage: (page: number) => void;
 }
 
-const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
+const ListGroupArtist = ({ page, setPage }: ListGroupArtistProps) => {
   const { artists, setArtists } = useContext(ArtistContext);
   const { musics } = useContext(MusicContext);
   const { setMusics } = useContext(MusicContext);
-  const { isConnection } = useContext(ConnectionContext);
+  const { isConnection, setIsConnection } = useContext(ConnectionContext);
   const { trackCountDict } = useContext(TrackCountContext);
   const [indexToDelete, setIndexToDelete] = useState(-1);
+  const navigate = useNavigate();
 
   if (artists.length === 0) {
     return <p>No item found!</p>;
   }
-
-  const artistsOnThisPage = artists.slice(
-    (page - 1) * elementsByPage,
-    page * elementsByPage
-  );
 
   const deleteFromLocalDb = async () => {
     try {
@@ -40,9 +38,10 @@ const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
       artistMusics.forEach(async (music) => {
         await db.musics.delete(music.musicId);
       });
-      setArtists([]); // it is for telling the useEffect that there is a change not so nice but whatever
+      setArtists(artists.splice(indexToDelete, 1)); // it is for telling the useEffect that there is a change not so nice but whatever
+      setIsConnection(false);
     } catch (error) {
-      console.log("Couldnt update artist in local repo");
+      console.log("Couldnt update artist in local repo: " + error.message);
     }
   };
 
@@ -59,9 +58,12 @@ const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
       .catch((err) => {
         console.log(err.message);
       });
+    setPage(1);
     //we need to refetch the elements so the list is updated
-    await axios
-      .get("http://localhost:8080/artist")
+    axios
+      .get("http://localhost:8080/artistpage", {
+        params: { offset: elementsByPage, page: page },
+      })
       .then((response) => {
         setArtists(response.data);
       })
@@ -69,7 +71,9 @@ const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
         alert(error.message + ". Server might be down.");
       });
     await axios
-      .get("http://localhost:8080/music")
+      .get("http://localhost:8080/musicpage", {
+        params: { offset: elementsByPage, page: 1 },
+      })
       .then((response) => {
         setMusics(response.data);
       })
@@ -100,7 +104,7 @@ const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
   return (
     <>
       <ul data-testid="list" className="list-group">
-        {artistsOnThisPage.map((artist, index) => (
+        {artists.map((artist, index) => (
           <li
             className={"list-group-item list-group-item-dark"}
             key={artist.artistId}
@@ -109,7 +113,7 @@ const ListGroupArtist = ({ page }: ListGroupArtistProps) => {
             <br></br>
             {artist.biography}
             <br></br>
-            MusicTrack Counter: {trackCountDict[artist.artistId]}
+            MusicTrack Counter: {trackCountDict[artist.artistId] || 0}
             <br></br>
             <NavButton /*FOR EDIT*/
               path={"/artist/edit/" + artist.artistId}

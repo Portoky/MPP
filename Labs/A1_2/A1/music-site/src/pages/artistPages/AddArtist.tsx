@@ -33,10 +33,10 @@ const AddArtist = () => {
       await db.artists.add(postData).then((id) => {
         const artistsList = artists;
         const artistId = id;
-        artistsList.push({ artistId, name, biography, musicList: [] });
+        artistsList.push({ artistId, name, biography, musicList: [] }); //i think the then part is unnecessary but well
         setArtists(artistsList);
+        navigate("/");
       });
-      navigate("/");
     } catch (error) {
       console.log("Couldnt save artist in local repo");
     }

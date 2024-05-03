@@ -1,4 +1,4 @@
-import { ChangeEvent, useContext } from "react";
+import { ChangeEvent, useContext, useEffect } from "react";
 import { useState } from "react";
 import Rating from "@mui/material/Rating";
 import "../../assets/AddMusic.css";
@@ -8,12 +8,15 @@ import { ArtistContext } from "../../context/ArtistContext";
 import Select from "react-select";
 import { ConnectionContext } from "../../context/ConnectionContext";
 import { db } from "../../db/db";
+import axios from "axios";
+import { Artist } from "../../entities/Artist";
 
 const AddMusic = () => {
   const [title, setTitle] = useState("");
   const [rating, setRating] = useState(MusicRating.ONESTAR);
   const [yearOfRelease, setYearOfRelease] = useState(-1);
   const [artistId, setArtistId] = useState(-1);
+  const [artistName, setArtistName] = useState("");
   const navigate = useNavigate();
   const { artists } = useContext(ArtistContext);
   const { isConnection } = useContext(ConnectionContext);
@@ -21,6 +24,9 @@ const AddMusic = () => {
   const handleArtist = (opt) => {
     const artistId = opt.value;
     setArtistId(artistId);
+    const artistName = opt.label;
+    setArtistName(artistName);
+    console.log(artistName);
   };
 
   const handleTitle = (event: ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +42,7 @@ const AddMusic = () => {
     const postData = {
       title,
       artistId,
+      artistName,
       rating,
       yearOfRelease,
     };
@@ -109,12 +116,20 @@ const AddMusic = () => {
     //sending a POST request
     updateServerDb();
   };
-
-  //options
   const artistOptions: { label: string; value: number }[] = [];
-  artists.forEach((artist) => {
-    artistOptions.push({ label: artist.name, value: artist.artistId });
-  });
+  //options
+  useEffect(() => {
+    axios.get("http://localhost:8080/artist").then((response) => {
+      const allArtists = response.data;
+      allArtists.forEach((artist: Artist) => {
+        artistOptions.push({ label: artist.name, value: artist.artistId });
+      });
+    });
+    /*artists.forEach((artist) => {
+      artistOptions.push({ label: artist.name, value: artist.artistId });
+    });*/
+  }, []);
+
   return (
     <>
       <h2>Add music information</h2>

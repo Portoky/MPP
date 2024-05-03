@@ -25,8 +25,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin("http://localhost:3030")
-//@CrossOrigin("")
 public class MusicController {
     private final MusicRepository musicRepository;
     private final ArtistRepository artistRepository;
@@ -40,11 +38,14 @@ public class MusicController {
     @GetMapping("/musicpage")
     ResponseEntity<List<MusicDto>> allForPage(@RequestParam Integer offset, @RequestParam Integer page){
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("length", String.valueOf(musicRepository.count()));
+        responseHeaders.set("allmusiccount", String.valueOf(musicRepository.count()));
+        int pageSize = offset;
+        int currentOffset = offset*(page-1);
         try {
             List<MusicDto> result =
-                    musicRepository.findAll().stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId())
-                    ).toList().subList((page - 1) * offset, page * offset);
+                    musicRepository.findAllForPage(currentOffset, pageSize).stream().map(
+                            music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId(), music.getArtist().getName()))
+                            .collect(Collectors.toList());
             return ResponseEntity.ok().headers(responseHeaders).body(result);
             }catch (IndexOutOfBoundsException ex){
                 return ResponseEntity.ok().headers(responseHeaders).body(new ArrayList<MusicDto>());
@@ -55,16 +56,20 @@ public class MusicController {
     @GetMapping("/music")
     List<MusicDto> all(){
         List<MusicDto> result =
-                musicRepository.findAll().stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId())
+                musicRepository.findAll().stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId(), music.getArtist().getName())
                 ).collect(Collectors.toList());
         return result;
     }
     @GetMapping("/music/artist/{id}") //returns all the music of an artist --> not all only some of it!
     List<MusicDto> artistMusics(@PathVariable("id") Long id, @RequestParam Integer offset, @RequestParam Integer page){
         try {
-            List<MusicDto> result =
-                    musicRepository.findByArtistArtistId(id).stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId())
-                    ).collect(Collectors.toList()).subList((page - 1) * offset, page * offset); //its like a query where artist.artistId = id1}, pagination
+            int pageSize = offset;
+            int currentOffset = offset*(page-1);
+            List<MusicDto> result = musicRepository.findAllArtistMusicForPage(currentOffset, pageSize, id).stream().map(
+                    music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId(), music.getArtist().getName()))
+                    .collect(Collectors.toList());
+                    /*musicRepository.findByArtistArtistId(id).stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId(), music.getArtist().getName())
+                    ).collect(Collectors.toList()).subList((page - 1) * offset, page * offset); //its like a query where artist.artistId = id1}, pagination*/
             return result;
         }catch (IndexOutOfBoundsException ex){
             return new ArrayList<MusicDto>(); //return it empty
@@ -97,10 +102,10 @@ public class MusicController {
 
             artistTemp.getMusicList().add(newMusic);
             musicRepository.save(newMusic);
-            return new MusicDto(newMusic.getMusicId(), newMusic.getTitle(), newMusic.getRating(), newMusic.getYearOfRelease(), id);
+            return new MusicDto(newMusic.getMusicId(), newMusic.getTitle(), newMusic.getRating(), newMusic.getYearOfRelease(), id, artistTemp.getName());
         }catch (InvalidMusicException ex){
             System.out.println(ex.getMessage());
-            return new MusicDto(Long.valueOf(1), "", -1, -1, Long.valueOf(1));
+            return new MusicDto(Long.valueOf(1), "", -1, -1, Long.valueOf(1), "");
         }
     }
 
@@ -108,7 +113,7 @@ public class MusicController {
     MusicDto one(@PathVariable Long musicId) throws MusicNotFoundException {
 
         Music music = musicRepository.findById(musicId).orElseThrow(() -> new MusicNotFoundException(musicId));
-        return new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), musicId);
+        return new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), musicId, music.getArtist().getName());
     }
 
     @PutMapping("/music/edit/{musicId}/artist/{artistId}")
@@ -131,11 +136,11 @@ public class MusicController {
                 MusicValidator.validate(music);
 
                  musicRepository.save(music);
-                 return new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), musicId);
+                 return new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), musicId, music.getArtist().getName());
             }).orElseThrow(() -> new MusicNotFoundException(musicId));
         }catch(InvalidMusicException ex){
             System.out.println(ex.getMessage());
-            return new MusicDto(1L, "", -1, -1, 1L);
+            return new MusicDto(1L, "", -1, -1, 1L, "");
         }
     }
 
