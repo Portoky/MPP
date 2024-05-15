@@ -30,11 +30,12 @@ const AddArtist = () => {
     };
 
     try {
-      await db.artists.add(postData).then((id) => {
-        const artistsList = artists;
-        const artistId = id;
-        artistsList.push({ artistId, name, biography, musicList: [] }); //i think the then part is unnecessary but well
-        setArtists(artistsList);
+      db.artists.add(postData).then((id) => {
+        const updatedArtistsList = [
+          ...artists,
+          { artistId: id, name, biography, musicList: [] },
+        ];
+        setArtists(updatedArtistsList);
         navigate("/");
       });
     } catch (error) {
@@ -48,19 +49,25 @@ const AddArtist = () => {
       biography: biography,
     };
 
-    await fetch("http://localhost:8080/artist/add", {
+    const response = await fetch("http://localhost:8080/artist/add", {
       method: "POST",
       body: JSON.stringify(postData),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
+        Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
       },
-    })
-      .then(() => {
+    });
+    if (!response.ok) {
+      if (response.status === 403) {
+        alert("You have no authorization to do that!");
         navigate("/");
-      })
-      .catch((err) => {
-        alert(err.message);
-      });
+      } else {
+        const errorMessage = await response.text();
+        alert(`Error: ${errorMessage}`);
+      }
+    } else {
+      navigate("/");
+    }
   };
   async function handleAddButtonClick() {
     if (name === "" || biography === "") {

@@ -40,7 +40,11 @@ const ViewArtist = () => {
       );
     } else {
       axios
-        .get("http://localhost:8080/artist/view/count/" + artistId)
+        .get("http://localhost:8080/artist/view/count/" + artistId, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        })
         .then((response) => {
           setMusicCount(response.data);
         })
@@ -61,18 +65,24 @@ const ViewArtist = () => {
       axios
         .get("http://localhost:8080/music/artist/" + artistId, {
           params: { offset: 20, page: artistMusicPage },
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
         })
         .then((response) => {
           setArtistMusic((prevArtistMusic) => {
             return [...new Set([...prevArtistMusic, ...response.data])];
           });
-          console.log(response.data);
-          console.log(artistMusic);
           setHasMore(response.data.length > 0);
           setLoading(false);
         })
-        .catch((error) => {
-          alert(error.message + ". Server might be down.");
+        .catch((err) => {
+          const message = err.message;
+          if (message.includes("403")) {
+            alert("You have no authorization to look at other artists musics!");
+          } else {
+            alert(err.message + ". Server might be down.");
+          }
         });
     }
   }, [artistMusicPage]);
@@ -107,9 +117,7 @@ const ViewArtist = () => {
         </p>
         <ul className="list-group">
           {artistMusic.length === 0 ? (
-            <li className="list-group-item">
-              No music made by this artist so far
-            </li>
+            <></>
           ) : (
             artistMusic.map((music: Music, index) => {
               if (index === artistMusic.length - 1) {

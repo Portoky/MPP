@@ -79,20 +79,28 @@ const AddMusic = () => {
       rating: rating,
       yearOfRelease: yearOfRelease,
     };
-    await fetch("http://localhost:8080/music/add/" + artistId, {
-      method: "POST",
-      body: JSON.stringify(postData),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then((response) => response.json())
-      .then(() => {
+    const response = await fetch(
+      "http://localhost:8080/music/add/" + artistId,
+      {
+        method: "POST",
+        body: JSON.stringify(postData),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
+      }
+    );
+    if (!response.ok) {
+      if (response.status === 403) {
+        alert("You have no authorization to do that!");
         navigate("/");
-      })
-      .catch((err) => {
-        alert(err.message);
-      });
+      } else {
+        const errorMessage = await response.text();
+        alert(`Error: ${errorMessage}`);
+      }
+    } else {
+      navigate("/");
+    }
   };
 
   const handleAddButtonClick = async () => {
@@ -119,15 +127,31 @@ const AddMusic = () => {
   const artistOptions: { label: string; value: number }[] = [];
   //options
   useEffect(() => {
-    axios.get("http://localhost:8080/artist").then((response) => {
-      const allArtists = response.data;
+    const getAllArtistFromServerDb = async () => {
+      axios
+        .get("http://localhost:8080/artist", {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        })
+        .then((response) => {
+          const allArtists = response.data;
+          allArtists.forEach((artist: Artist) => {
+            artistOptions.push({ label: artist.name, value: artist.artistId });
+          });
+        });
+    };
+    const getAllArtistFromLocalDb = async () => {
+      const allArtists = await db.artists.toArray();
       allArtists.forEach((artist: Artist) => {
         artistOptions.push({ label: artist.name, value: artist.artistId });
       });
-    });
-    /*artists.forEach((artist) => {
-      artistOptions.push({ label: artist.name, value: artist.artistId });
-    });*/
+    };
+    if (isConnection) {
+      getAllArtistFromServerDb();
+    } else {
+      getAllArtistFromLocalDb();
+    }
   }, []);
 
   return (

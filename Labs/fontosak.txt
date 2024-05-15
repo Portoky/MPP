@@ -1,0 +1,5 @@
+ocalhost connectionstring
+jdbc:sqlserver://localhost:1433;encrypt=true;trustServerCertificate=true;databaseName=MusicForum
+
+Portoky
+jelszo

@@ -1,6 +1,7 @@
 package com.portoky.servermusicforum.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.portoky.servermusicforum.user.User;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ public class Artist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ArtistId")
     Long artistId;
-    @Column(name="Name")
+    @Column(name="Name", unique = true)
     private String name;
     @Column(name="Biography")
     private String biography;

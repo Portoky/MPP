@@ -37,19 +37,32 @@ const ListGroupMusic = ({ filter, page, setPage }: ListGroupMusicProps) => {
   const deleteFromServerDb = async () => {
     await axios
       .delete(
-        "http://localhost:8080/music/delete/" + musics[indexToDelete].musicId
+        "http://localhost:8080/music/delete/" + musics[indexToDelete].musicId,
+        {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        }
       )
       .then(() => {
         console.log("Deletion successful");
       })
       .catch((err) => {
-        console.log(err.message);
+        const message = err.message;
+        if (message.includes("403")) {
+          alert("You have no authorization to do that!");
+        } else {
+          alert(message);
+        }
       });
 
     //we need to refetch the elements so the list is updated
     await axios
       .get("http://localhost:8080/musicpage", {
         params: { offset: elementsByPage, page: page },
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
       })
       .then((response) => {
         setMusics(response.data);

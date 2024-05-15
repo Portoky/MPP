@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import AddMusic from "./pages/musicPages/AddMusic";
 import Home from "./pages/Home";
 import EditMusic from "./pages/musicPages/EditMusic";
@@ -11,6 +11,8 @@ import EditArtist from "./pages/artistPages/EditArtist";
 import ViewArtist from "./pages/artistPages/ViewArtist";
 import { ConnectionProvider } from "./context/ConnectionContext";
 import { TrackCountProvider } from "./context/TrackCountContext";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const App = () => {
   return (
@@ -23,6 +25,11 @@ const App = () => {
               {/*this is how we provide the props now globally with context*/}
               <BrowserRouter>
                 <Routes>
+                  <Route path="/login" element={<Login></Login>}></Route>
+                  <Route
+                    path="/register"
+                    element={<Register></Register>}
+                  ></Route>
                   <Route
                     path="/" /*id show the which elements to show */
                     element={<Home></Home>}

@@ -5,12 +5,9 @@ import { MusicContext } from "../../context/MusicContext";
 import { useContext } from "react";
 import { Music } from "../../entities/Music";
 import "../../assets/ViewMusic.css";
-import { ArtistContext } from "../../context/ArtistContext";
 
 const ViewMusic = () => {
   const { musics } = useContext(MusicContext);
-  const { artists } = useContext(ArtistContext);
-
   //get the id from the url
   const param = useParams();
   const stringmusicId = param["id"] || "-1";

@@ -12,10 +12,10 @@ import ListGroupArtist from "../components/artistComponents/ListGroupArtist";
 import { ArtistContext } from "../context/ArtistContext";
 import { ConnectionContext } from "../context/ConnectionContext";
 import { db } from "../db/db";
-import { useLiveQuery } from "dexie-react-hooks";
 import { Artist } from "../entities/Artist";
 import { Music } from "../entities/Music";
 import { TrackCountContext } from "../context/TrackCountContext";
+import { useNavigate } from "react-router-dom";
 
 //generated value saved
 
@@ -58,6 +58,7 @@ async function synchronizeArtistsThenMusic(artists: Artist[]) {
       body: JSON.stringify(artistPostData),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
+        Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
       },
     })
       .then((response) => response.json())
@@ -83,18 +84,23 @@ async function synchronizeArtistsThenMusic(artists: Artist[]) {
         });
       })
       .catch((err) => {
-        alert(err.message);
+        const message = err.message;
+        if (message.includes("403")) {
+          alert("You have no authorization to do that!");
+        } else {
+          alert(message);
+        }
       });
   });
 }
 const Home = () => {
+  const navigate = useNavigate();
   const { musics, setMusics } = useContext(MusicContext); //current musics on this page
   const { artists, setArtists } = useContext(ArtistContext); //current artists on this page
   const { isConnection, setIsConnection } = useContext(ConnectionContext);
 
   //const [queryMusics, setQueryMusics] = useState([]);
   //const [queryArtists, setQueryArtists] = useState([]);
-
   const [musicsCount, setMusicsCount] = useState(0); //number of all musics
   const [artistsCount, setArtistsCount] = useState(0); //number of all artists
   const { setTrackCountDict } = useContext(TrackCountContext);
@@ -115,7 +121,11 @@ const Home = () => {
       return musics.filter((music) => music.artistId === artistId).length;
     } else {
       axios
-        .get("http://localhost:8080/artist/view/count/" + artistId)
+        .get("http://localhost:8080/artist/view/count/" + artistId, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        })
         .then((response) => {
           setTrackCountDict((prevTrackCountDict) => ({
             ...prevTrackCountDict,
@@ -129,11 +139,23 @@ const Home = () => {
     }
   };
 
+  //side effect to check if we have authorization first
+  useEffect(() => {
+    const bearerToken = sessionStorage.getItem("bearerToken");
+    if (!bearerToken) {
+      // Redirect to the login page if bearer token doesn't exist
+      navigate("/login");
+    }
+  }, [navigate]);
+
   //side effect just for checking if we have connection
   useEffect(() => {
     axios
       .get("http://localhost:8080/musicpage", {
         params: { offset: elementsByPage, page: musicPage },
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
       })
       .then(() => {
         setIsConnection(true); //checking if connection with server is still okay
@@ -145,28 +167,30 @@ const Home = () => {
 
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   //if connection with server is not made
-  /*let queryMusics =
+  /*const queryMusics =
     useLiveQuery(() => {
-      console.log("queryy");
       return db.musics.toArray();
     }) || []; //so it is not whining for undefined stuff
-  let queryArtists =
+  const queryArtists =
     useLiveQuery(() => {
       return db.artists.toArray();
-    }) || []; //so it is not whining for undefined stuff
-
-    */
+    }) || [];*/ //so it is not whining for undefined stuff
+  let queryMusics: Music[] = [];
+  let queryArtists: Artist[] = [];
   useEffect(() => {
     /////
-    let queryArtists;
-    let queryMusics;
     const fetchLocalDb = async () => {
-      queryMusics = await db.musics.toArray();
+      db.musics.toArray().then((musics) => {
+        queryMusics = musics;
+      });
       const musicsOnThisPage = queryMusics.slice(
         (musicPage - 1) * elementsByPage,
         musicPage * elementsByPage
       );
-      queryArtists = await db.artists.toArray();
+
+      db.artists.toArray().then((artists) => {
+        queryArtists = artists;
+      });
       const artistsOnThisPage = queryArtists.slice(
         (musicPage - 1) * elementsByPage,
         musicPage * elementsByPage
@@ -188,11 +212,14 @@ const Home = () => {
       );
     };
     const fetchServerDb = async () => {
-      queryArtists = db.artists.toArray();
-      synchronizeArtistsThenMusic(await queryArtists);
+      //queryArtists = db.artists.toArray();
+      synchronizeArtistsThenMusic(queryArtists);
       axios
         .get("http://localhost:8080/musicpage", {
           params: { offset: elementsByPage, page: musicPage },
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
         })
         .then((response) => {
           setMusics(response.data);
@@ -207,13 +234,16 @@ const Home = () => {
       axios
         .get("http://localhost:8080/artistpage", {
           params: { offset: elementsByPage, page: artistPage },
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
         })
         .then((response) => {
           setArtists(response.data);
           setArtistsCount(parseInt(response.headers["allartistcount"]));
           setIsConnection(true);
         })
-        .catch(() => {
+        .catch((error) => {
           setIsConnection(false); //means the server might be down, we use the instoragedb
         });
       db.deleteAll();
@@ -232,7 +262,11 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/artist/view/count")
+      .get("http://localhost:8080/artist/view/count", {
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
+      })
       .then((response) => {
         setTrackCountDict(response.data);
       })
@@ -256,6 +290,10 @@ const Home = () => {
     page: number
   ) => {
     if (page <= artistsCount / 5 + 1) setArtistPage(page);
+  };
+  const handleLogout = () => {
+    sessionStorage.removeItem("bearerToken");
+    navigate("/login");
   };
   return (
     <>
@@ -331,6 +369,9 @@ const Home = () => {
           </div>
         </div>
       </div>
+      <button className="btn btn-outline-info" onClick={handleLogout}>
+        Logout
+      </button>
     </>
   );
 };

@@ -1,27 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Music } from "../entities/Music";
 import { BarChart } from "@mui/x-charts/BarChart";
-import { MusicContext } from "../context/MusicContext";
-import { useContext } from "react";
+import axios from "axios";
 
 const Diagram = () => {
-  const { musics, setMusics } = useContext(MusicContext);
+  const [statsArray, setStatsArray] = useState<number[]>([0, 0, 0, 0, 0]);
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/music", {
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
+      })
+      .then((response) => {
+        const musicArray: Music[] = response.data; //checking if connection with server is still okay
+        const newStats: number[] = [0, 0, 0, 0, 0];
+        musicArray.forEach((music: Music) => {
+          newStats[music.rating - 1]++;
+        });
 
-  const arr: number[] = [];
-  musics.forEach((music) => {
-    arr.push(music.rating);
-  });
+        setStatsArray(newStats);
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
+  }, []);
 
-  let stats: number[] = [0, 0, 0, 0, 0, 0];
-  arr.forEach((rating) => {
-    stats[rating] += 1;
-  });
-  stats = stats.slice(1);
   return (
     <>
       <h1>Rating status</h1>
       <BarChart
-        series={[{ data: stats }]}
+        series={[{ data: statsArray }]}
         xAxis={[
           {
             data: ["Star 1", "Star 2", "Star 3", "Star 4", "Star 5"],

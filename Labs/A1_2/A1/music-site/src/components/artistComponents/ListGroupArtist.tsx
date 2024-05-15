@@ -50,19 +50,33 @@ const ListGroupArtist = ({ page, setPage }: ListGroupArtistProps) => {
   const deleteFromServerDb = async () => {
     await axios
       .delete(
-        "http://localhost:8080/artist/delete/" + artists[indexToDelete].artistId
+        "http://localhost:8080/artist/delete/" +
+          artists[indexToDelete].artistId,
+        {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        }
       )
       .then(() => {
         console.log("Deletion successful");
       })
       .catch((err) => {
-        console.log(err.message);
+        const message = err.message;
+        if (message.includes("403")) {
+          alert("You have no authorization to do that!");
+        } else {
+          alert(message);
+        }
       });
     setPage(1);
     //we need to refetch the elements so the list is updated
     axios
       .get("http://localhost:8080/artistpage", {
         params: { offset: elementsByPage, page: page },
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
       })
       .then((response) => {
         setArtists(response.data);
@@ -73,6 +87,9 @@ const ListGroupArtist = ({ page, setPage }: ListGroupArtistProps) => {
     await axios
       .get("http://localhost:8080/musicpage", {
         params: { offset: elementsByPage, page: 1 },
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
       })
       .then((response) => {
         setMusics(response.data);

@@ -8,6 +8,8 @@ import com.portoky.servermusicforum.exception.InvalidMusicException;
 import com.portoky.servermusicforum.exception.MusicNotFoundException;
 import com.portoky.servermusicforum.repository.ArtistRepository;
 import com.portoky.servermusicforum.repository.MusicRepository;
+import com.portoky.servermusicforum.user.Role;
+import com.portoky.servermusicforum.user.User;
 import com.portoky.servermusicforum.validator.MusicValidator;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -61,8 +65,16 @@ public class MusicController {
         return result;
     }
     @GetMapping("/music/artist/{id}") //returns all the music of an artist --> not all only some of it!
+    @PreAuthorize("hasAnyRole('ADMIN','ARTIST')")
     List<MusicDto> artistMusics(@PathVariable("id") Long id, @RequestParam Integer offset, @RequestParam Integer page){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User userDetails = (User) principal;
         try {
+            Optional<Artist> optionalArtist =  artistRepository.findById(id);
+            Artist artist = optionalArtist.orElseThrow(IndexOutOfBoundsException::new);
+            if(!artist.getName().equals(userDetails.getUsername()) && userDetails.getRole() != Role.ADMIN){
+                throw  new IndexOutOfBoundsException();
+            }
             int pageSize = offset;
             int currentOffset = offset*(page-1);
             List<MusicDto> result = musicRepository.findAllArtistMusicForPage(currentOffset, pageSize, id).stream().map(
@@ -90,12 +102,18 @@ public class MusicController {
         }
     }
     @PostMapping("/music/add/{id}")
+    @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
     MusicDto newMusic(@RequestBody Music newMusic, @PathVariable("id") Long id){ //artistId
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User userDetails = (User) principal;
         try{
 
             Optional<Artist> optionalArtist = artistRepository.findById(Long.valueOf(id));
             Artist artistTemp = optionalArtist.orElseThrow(() -> new ArtistNotFoundException(Long.valueOf(id))); //in case it null
-
+            if(userDetails.getRole() == Role.ARTIST && !artistTemp.getName().equals(userDetails.getUsername())){ //++another validation
+                //u can only modify YOUR profile -> username is a candidate key in both places no mapping but yeah
+                throw new InvalidMusicException("You can only modify your own profile");
+            }
             newMusic.setArtist(artistTemp);
 
             MusicValidator.validate(newMusic);
@@ -117,7 +135,10 @@ public class MusicController {
     }
 
     @PutMapping("/music/edit/{musicId}/artist/{artistId}")
+    @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
     MusicDto replaceMusic(@RequestBody Music newMusic, @PathVariable Long musicId, @PathVariable Long artistId){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User userDetails = (User) principal;
         try{
 
             return musicRepository.findById(musicId).map(music -> {
@@ -127,6 +148,10 @@ public class MusicController {
 
                 Optional<Artist> optionalArtist = artistRepository.findById(Long.valueOf(artistId));
                 Artist artistTemp = optionalArtist.orElseThrow(() -> new ArtistNotFoundException(Long.valueOf(artistId))); //in case it null
+                if(userDetails.getRole() == Role.ARTIST && !artistTemp.getName().equals(userDetails.getUsername())){ //++another validation
+                    //u can only modify YOUR profile -> username is a candidate key in both places no mapping but yeah
+                    throw new InvalidMusicException("You can only modify your own profile");
+                }
                 //first delete the connection between artist and music
                 music.getArtist().getMusicList().remove(music);
                 //then udpdate it only
@@ -145,6 +170,7 @@ public class MusicController {
     }
 
     @DeleteMapping("/music/delete/{musicId}")
+    @PreAuthorize("hasRole('ADMIN')")
     void deleteMusic(@PathVariable Long musicId){
         Music musicToDelete = musicRepository.findById(musicId).orElseThrow(() -> new MusicNotFoundException(musicId));
         musicRepository.deleteById(musicId);
@@ -168,4 +194,3 @@ public class MusicController {
 
 }
 
-    
