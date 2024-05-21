@@ -1,28 +1,17 @@
 import { describe, expect, test } from "vitest";
-import { render } from "@testing-library/react";
+import { render, waitFor, screen } from "@testing-library/react";
+
 import Home from "../pages/Home";
-import { Routes, Route } from "react-router-dom";
-import { MemoryRouter } from "react-router-dom";
-import { MusicProvider } from "../context/MusicContext";
-import EditMusic from "../pages/musicPages/EditMusic";
-import ViewMusic from "../pages/musicPages/ViewMusic";
-import AddMusic from "../pages/musicPages/AddMusic";
-import Diagram from "../pages/Diagram";
 describe("Home", () => {
-  test("renders", () => {
-    const rendering = render(
-      <MusicProvider>
-        <MemoryRouter initialEntries={["/"]}>
-          <Routes>
-            <Route path="/edit/:id" element={<EditMusic></EditMusic>} />
-            <Route path="/view/:id" element={<ViewMusic></ViewMusic>} />
-            <Route path="/pages/addmusic" element={<AddMusic></AddMusic>} />
-            <Route path="/pages/diagram" element={<Diagram></Diagram>} />
-          </Routes>
-        </MemoryRouter>
-      </MusicProvider>
-    );
-    expect(rendering).toMatchSnapshot();
+  test("renders", async () => {
+    render(<Home />);
+    await waitFor(() => {
+      expect(screen.getByText("Music Forum", { exact: false }));
+    });
+
+    // Check if the "Add Button" is present in the Home component
+    expect(screen.getByText("Add Music", { exact: false }));
+    //expect(rendering).toMatchSnapshot();
     //expect(screen.getByText("Music forum")).toBeDefined();
   });
 });

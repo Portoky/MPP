@@ -1,14 +1,12 @@
 import DeleteButton from "../DeleteButton";
 import { MusicContext } from "../../context/MusicContext";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import Alert from "../Alert";
 import axios from "axios";
 import { elementsByPage } from "../../utils/Utils";
 import NavButton from "../NavButton";
-import { ArtistContext } from "../../context/ArtistContext";
 import { ConnectionContext } from "../../context/ConnectionContext";
 import { db } from "../../db/db";
-import { Artist } from "../../entities/Artist";
 
 interface ListGroupMusicProps {
   filter: string;
@@ -16,7 +14,7 @@ interface ListGroupMusicProps {
   setPage: (page: number) => void;
 }
 
-const ListGroupMusic = ({ filter, page, setPage }: ListGroupMusicProps) => {
+const ListGroupMusic = ({ filter, page }: ListGroupMusicProps) => {
   const { musics, setMusics } = useContext(MusicContext);
   const [indexToDelete, setIndexToDelete] = useState(-1);
   const { isConnection, setIsConnection } = useContext(ConnectionContext);
@@ -37,7 +35,8 @@ const ListGroupMusic = ({ filter, page, setPage }: ListGroupMusicProps) => {
   const deleteFromServerDb = async () => {
     await axios
       .delete(
-        "http://localhost:8080/music/delete/" + musics[indexToDelete].musicId,
+        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/music/delete/" +
+          musics[indexToDelete].musicId,
         {
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
@@ -58,12 +57,15 @@ const ListGroupMusic = ({ filter, page, setPage }: ListGroupMusicProps) => {
 
     //we need to refetch the elements so the list is updated
     await axios
-      .get("http://localhost:8080/musicpage", {
-        params: { offset: elementsByPage, page: page },
-        headers: {
-          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-        },
-      })
+      .get(
+        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/musicpage",
+        {
+          params: { offset: elementsByPage, page: page },
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        }
+      )
       .then((response) => {
         setMusics(response.data);
       })

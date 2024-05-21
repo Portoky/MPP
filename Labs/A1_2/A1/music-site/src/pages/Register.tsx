@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
@@ -8,7 +8,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("USER");
 
-  function handleSubmit(event): void {
+  function handleSubmit(event: { preventDefault: () => void }): void {
     event.preventDefault();
     const postData = {
       username: username,
@@ -16,7 +16,10 @@ const Register = () => {
       role: role,
     };
     axios
-      .post("http://localhost:8080/auth/register", postData)
+      .post(
+        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/auth/register",
+        postData
+      )
       .then((response) => {
         const bearerToken = response.data;
         sessionStorage.setItem("bearerToken", bearerToken["token"]); //session management ig

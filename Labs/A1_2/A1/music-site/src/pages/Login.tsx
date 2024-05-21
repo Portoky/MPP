@@ -15,8 +15,12 @@ const Login = () => {
       password: password,
     };
     axios
-      .post("http://localhost:8080/auth/authenticate", postData)
+      .post(
+        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/auth/authenticate",
+        postData
+      )
       .then((response) => {
+        console.log("hello");
         const bearerToken = response.data;
         sessionStorage.setItem("bearerToken", bearerToken["token"]); //session management ig
         navigate("/");

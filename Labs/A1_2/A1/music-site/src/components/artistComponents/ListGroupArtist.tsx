@@ -9,7 +9,6 @@ import { MusicContext } from "../../context/MusicContext";
 import { ConnectionContext } from "../../context/ConnectionContext";
 import { db } from "../../db/db";
 import { TrackCountContext } from "../../context/TrackCountContext";
-import { useNavigate } from "react-router-dom";
 interface ListGroupArtistProps {
   page: number;
   setPage: (page: number) => void;
@@ -22,7 +21,6 @@ const ListGroupArtist = ({ page, setPage }: ListGroupArtistProps) => {
   const { isConnection, setIsConnection } = useContext(ConnectionContext);
   const { trackCountDict } = useContext(TrackCountContext);
   const [indexToDelete, setIndexToDelete] = useState(-1);
-  const navigate = useNavigate();
 
   if (artists.length === 0) {
     return <p>No item found!</p>;
@@ -50,7 +48,7 @@ const ListGroupArtist = ({ page, setPage }: ListGroupArtistProps) => {
   const deleteFromServerDb = async () => {
     await axios
       .delete(
-        "http://localhost:8080/artist/delete/" +
+        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist/delete/" +
           artists[indexToDelete].artistId,
         {
           headers: {
@@ -72,12 +70,15 @@ const ListGroupArtist = ({ page, setPage }: ListGroupArtistProps) => {
     setPage(1);
     //we need to refetch the elements so the list is updated
     axios
-      .get("http://localhost:8080/artistpage", {
-        params: { offset: elementsByPage, page: page },
-        headers: {
-          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-        },
-      })
+      .get(
+        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artistpage",
+        {
+          params: { offset: elementsByPage, page: page },
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        }
+      )
       .then((response) => {
         setArtists(response.data);
       })
@@ -85,12 +86,15 @@ const ListGroupArtist = ({ page, setPage }: ListGroupArtistProps) => {
         alert(error.message + ". Server might be down.");
       });
     await axios
-      .get("http://localhost:8080/musicpage", {
-        params: { offset: elementsByPage, page: 1 },
-        headers: {
-          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-        },
-      })
+      .get(
+        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/musicpage",
+        {
+          params: { offset: elementsByPage, page: 1 },
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        }
+      )
       .then((response) => {
         setMusics(response.data);
       })

@@ -7,11 +7,14 @@ const Diagram = () => {
   const [statsArray, setStatsArray] = useState<number[]>([0, 0, 0, 0, 0]);
   useEffect(() => {
     axios
-      .get("http://localhost:8080/music", {
-        headers: {
-          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-        },
-      })
+      .get(
+        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/music",
+        {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        }
+      )
       .then((response) => {
         const musicArray: Music[] = response.data; //checking if connection with server is still okay
         const newStats: number[] = [0, 0, 0, 0, 0];

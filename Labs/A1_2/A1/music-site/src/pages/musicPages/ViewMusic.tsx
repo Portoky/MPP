@@ -1,4 +1,3 @@
-import React from "react";
 import Rating from "@mui/material/Rating";
 import { useParams } from "react-router-dom";
 import { MusicContext } from "../../context/MusicContext";

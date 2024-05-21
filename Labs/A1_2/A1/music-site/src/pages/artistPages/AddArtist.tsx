@@ -49,14 +49,17 @@ const AddArtist = () => {
       biography: biography,
     };
 
-    const response = await fetch("http://localhost:8080/artist/add", {
-      method: "POST",
-      body: JSON.stringify(postData),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-        Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-      },
-    });
+    const response = await fetch(
+      "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist/add",
+      {
+        method: "POST",
+        body: JSON.stringify(postData),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
+      }
+    );
     if (!response.ok) {
       if (response.status === 403) {
         alert("You have no authorization to do that!");

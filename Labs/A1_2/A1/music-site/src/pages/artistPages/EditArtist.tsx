@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { ArtistContext } from "../../context/ArtistContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { Artist } from "../../entities/Artist";
@@ -55,7 +55,8 @@ const EditArtist = () => {
       biography: biography,
     };
     const response = await fetch(
-      "http://localhost:8080/artist/edit/" + artistId,
+      "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist/edit/" +
+        artistId,
       {
         method: "PUT",
         body: JSON.stringify(postData),

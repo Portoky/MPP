@@ -4,7 +4,6 @@ import Rating from "@mui/material/Rating";
 import "../../assets/AddMusic.css";
 import { MusicRating } from "../../entities/Music";
 import { useNavigate } from "react-router-dom";
-import { ArtistContext } from "../../context/ArtistContext";
 import Select from "react-select";
 import { ConnectionContext } from "../../context/ConnectionContext";
 import { db } from "../../db/db";
@@ -18,7 +17,6 @@ const AddMusic = () => {
   const [artistId, setArtistId] = useState(-1);
   const [artistName, setArtistName] = useState("");
   const navigate = useNavigate();
-  const { artists } = useContext(ArtistContext);
   const { isConnection } = useContext(ConnectionContext);
 
   const handleArtist = (opt) => {
@@ -80,7 +78,8 @@ const AddMusic = () => {
       yearOfRelease: yearOfRelease,
     };
     const response = await fetch(
-      "http://localhost:8080/music/add/" + artistId,
+      "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/music/add/" +
+        artistId,
       {
         method: "POST",
         body: JSON.stringify(postData),
@@ -129,11 +128,14 @@ const AddMusic = () => {
   useEffect(() => {
     const getAllArtistFromServerDb = async () => {
       axios
-        .get("http://localhost:8080/artist", {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-          },
-        })
+        .get(
+          "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist",
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+            },
+          }
+        )
         .then((response) => {
           const allArtists = response.data;
           allArtists.forEach((artist: Artist) => {
