@@ -40,15 +40,11 @@ const ViewArtist = () => {
       );
     } else {
       axios
-        .get(
-          "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist/view/count/" +
-            artistId,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-            },
-          }
-        )
+        .get("http://localhost:8080/artist/view/count/" + artistId, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        })
         .then((response) => {
           setMusicCount(response.data);
         })
@@ -67,16 +63,12 @@ const ViewArtist = () => {
       setArtistMusic(filteredMusics);
     } else {
       axios
-        .get(
-          "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/music/artist/" +
-            artistId,
-          {
-            params: { offset: 20, page: artistMusicPage },
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-            },
-          }
-        )
+        .get("http://localhost:8080/music/artist/" + artistId, {
+          params: { offset: 20, page: artistMusicPage },
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        })
         .then((response) => {
           setArtistMusic((prevArtistMusic) => {
             return [...new Set([...prevArtistMusic, ...response.data])];

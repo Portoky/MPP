@@ -29,21 +29,43 @@ const EditMusic = () => {
   const artistOptions: { label: string; value: number }[] = [];
   //options
   useEffect(() => {
-    axios
-      .get(
-        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist",
-        {
+    if (sessionStorage.getItem("role") === "ADMIN") {
+      axios
+        .get("http://localhost:8080/artist", {
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
           },
-        }
-      )
-      .then((response) => {
-        const allArtists = response.data;
-        allArtists.forEach((artist: Artist) => {
-          artistOptions.push({ label: artist.name, value: artist.artistId });
+        })
+        .then((response) => {
+          console.log(response.data);
+          const allArtists = response.data;
+          allArtists.forEach((artist: Artist) => {
+            artistOptions.push({
+              label: artist.name,
+              value: artist.artistId || 0,
+            });
+          });
         });
-      });
+    }
+    if (sessionStorage.getItem("role") == "ARTIST") {
+      axios
+        .get(
+          "http://localhost:8080/artist/name/" +
+            sessionStorage.getItem("username"),
+          {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+            },
+          }
+        )
+        .then((response) => {
+          const artist: Artist = response.data;
+          artistOptions.push({
+            label: artist.name,
+            value: artist.artistId || 0,
+          });
+        });
+    }
   }, []);
 
   if (musicId === -1) {
@@ -100,7 +122,7 @@ const EditMusic = () => {
       yearOfRelease: yearOfRelease,
     };
     const response = await fetch(
-      "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/music/edit/" +
+      "http://localhost:8080/music/edit/" +
         stringmusicId +
         "/artist/" +
         artistId,

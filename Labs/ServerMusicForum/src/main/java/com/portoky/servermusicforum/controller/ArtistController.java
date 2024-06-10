@@ -76,8 +76,17 @@ public class ArtistController {
         }
     }
 
+    @GetMapping("/artist/name/{artistName}")
+    Artist getArtistByName(@PathVariable String artistName) throws ArtistNotFoundException{
+        Artist artist =  artistRepository.findFirstByName(artistName);
+        if(artist == null){
+            throw new ArtistNotFoundException(-1L);
+        }
+        return artist;
+    }
+
     @GetMapping("/artist/view/{artistId}")
-    Artist one(@PathVariable Long artistId) throws ArtistNotFoundException {
+    Artist getArtistById(@PathVariable Long artistId) throws ArtistNotFoundException {
 
         return artistRepository.findById(artistId).orElseThrow(() -> new ArtistNotFoundException(artistId));
     }
@@ -85,7 +94,7 @@ public class ArtistController {
     @GetMapping("/artist/view/count/{artistId}")
     Long countArtistMusics(@PathVariable Long artistId) throws ArtistNotFoundException {
         Artist artist = artistRepository.findById(artistId).orElseThrow(() -> new ArtistNotFoundException(artistId));
-        Long result = musicRepository.findAll().stream().filter(music -> music.getArtist().getArtistId() == artistId).count();
+        Long result = musicRepository.findAll().stream().filter(music -> music.getArtist() != null && music.getArtist().getArtistId() == artistId).count();
         return result;
     }
     @GetMapping("/artist/view/count")
@@ -93,7 +102,8 @@ public class ArtistController {
         HashMap<Long, Long>artistMusicCountHashMap = new HashMap<>();
         List<CountArtistMusicDto> artistMusicCountPairs = artistRepository.countAllArtistsMusic();
         artistMusicCountPairs.forEach(artistMusicCountPair->{
-            artistMusicCountHashMap.put(artistMusicCountPair.getArtistId(), artistMusicCountPair.getCount());
+            if(artistMusicCountPair != null && artistMusicCountPair.getArtistId() != null)
+                artistMusicCountHashMap.put(artistMusicCountPair.getArtistId(), artistMusicCountPair.getCount());
         });
         return artistMusicCountHashMap;
 

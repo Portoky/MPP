@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 public interface ArtistRepository extends JpaRepository<Artist, Long> {
+
+    Artist findFirstByName(String name);
     @Query(value = "SELECT * FROM artists ORDER BY artist_id OFFSET :offset ROWS FETCH NEXT :pageSize ROWS ONLY", nativeQuery = true)
     List<Artist> findAllForPage(@Param("offset") int offset, @Param("pageSize") int pageSize);
 

@@ -78,8 +78,7 @@ const AddMusic = () => {
       yearOfRelease: yearOfRelease,
     };
     const response = await fetch(
-      "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/music/add/" +
-        artistId,
+      "http://localhost:8080/music/add/" + artistId,
       {
         method: "POST",
         body: JSON.stringify(postData),
@@ -128,14 +127,11 @@ const AddMusic = () => {
   useEffect(() => {
     const getAllArtistFromServerDb = async () => {
       axios
-        .get(
-          "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist",
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-            },
-          }
-        )
+        .get("http://localhost:8080/artist", {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        })
         .then((response) => {
           const allArtists = response.data;
           allArtists.forEach((artist: Artist) => {

@@ -48,7 +48,7 @@ const ListGroupArtist = ({ page, setPage }: ListGroupArtistProps) => {
   const deleteFromServerDb = async () => {
     await axios
       .delete(
-        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist/delete/" +
+        "http://localhost:8080/artist/delete/" +
           artists[indexToDelete].artistId,
         {
           headers: {
@@ -70,15 +70,12 @@ const ListGroupArtist = ({ page, setPage }: ListGroupArtistProps) => {
     setPage(1);
     //we need to refetch the elements so the list is updated
     axios
-      .get(
-        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artistpage",
-        {
-          params: { offset: elementsByPage, page: page },
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-          },
-        }
-      )
+      .get("http://localhost:8080/artistpage", {
+        params: { offset: elementsByPage, page: page },
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
+      })
       .then((response) => {
         setArtists(response.data);
       })
@@ -86,15 +83,12 @@ const ListGroupArtist = ({ page, setPage }: ListGroupArtistProps) => {
         alert(error.message + ". Server might be down.");
       });
     await axios
-      .get(
-        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/musicpage",
-        {
-          params: { offset: elementsByPage, page: 1 },
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-          },
-        }
-      )
+      .get("http://localhost:8080/musicpage", {
+        params: { offset: elementsByPage, page: 1 },
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
+      })
       .then((response) => {
         setMusics(response.data);
       })
@@ -136,22 +130,32 @@ const ListGroupArtist = ({ page, setPage }: ListGroupArtistProps) => {
             <br></br>
             MusicTrack Counter: {trackCountDict[artist.artistId] || 0}
             <br></br>
-            <NavButton /*FOR EDIT*/
-              path={"/artist/edit/" + artist.artistId}
-              className="btn btn-warning"
-            >
-              Edit artist
-            </NavButton>
+            {(sessionStorage.getItem("role") === "ADMIN" ||
+              (sessionStorage.getItem("role") === "ARTIST" &&
+                sessionStorage.getItem("username") === artist.name)) && (
+              <>
+                <NavButton /*FOR EDIT*/
+                  path={"/artist/edit/" + artist.artistId}
+                  className="btn btn-warning"
+                >
+                  Edit artist
+                </NavButton>
+              </>
+            )}
             <NavButton /*FOR VIEW*/
               path={"/artist/view/" + artist.artistId}
               className="btn btn-info"
             >
               View artist
             </NavButton>
-            <DeleteButton
-              text="Delete Artist"
-              onClick={() => onDeleteClick(index)}
-            ></DeleteButton>
+            {sessionStorage.getItem("role") === "ADMIN" && (
+              <>
+                <DeleteButton
+                  text="Delete Artist"
+                  onClick={() => onDeleteClick(index)}
+                ></DeleteButton>
+              </>
+            )}
             {
               //conditional rendering wether we need popup or not
               indexToDelete === index && (

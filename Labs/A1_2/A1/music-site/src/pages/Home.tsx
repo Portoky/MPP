@@ -35,7 +35,7 @@ import { useNavigate } from "react-router-dom";
         //   );
         // }
         axios
-          .get("https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/music")
+          .get("http://localhost:8080/music")
           .then((response) => {
             setMusics(response.data);
           })
@@ -53,17 +53,14 @@ async function synchronizeArtistsThenMusic(artists: Artist[]) {
       biography: artist.biography,
     };
 
-    await fetch(
-      "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist/add",
-      {
-        method: "POST",
-        body: JSON.stringify(artistPostData),
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-        },
-      }
-    )
+    await fetch("http://localhost:8080/artist/add", {
+      method: "POST",
+      body: JSON.stringify(artistPostData),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+      },
+    })
       .then((response) => response.json())
       .then((responseArtist: Artist) => {
         console.log(artist);
@@ -75,8 +72,7 @@ async function synchronizeArtistsThenMusic(artists: Artist[]) {
             yearOfRelease: music.yearOfRelease,
           };
           await fetch(
-            "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/music/add/" +
-              responseArtist.artistId,
+            "http://localhost:8080/music/add/" + responseArtist.artistId,
             {
               method: "POST",
               body: JSON.stringify(musicPostData),
@@ -127,15 +123,11 @@ const Home = () => {
       return musics.filter((music) => music.artistId === artistId).length;
     } else {
       axios
-        .get(
-          "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist/view/count/" +
-            artistId,
-          {
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-            },
-          }
-        )
+        .get("http://localhost:8080/artist/view/count/" + artistId, {
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        })
         .then((response) => {
           setTrackCountDict((prevTrackCountDict) => ({
             ...prevTrackCountDict,
@@ -161,15 +153,12 @@ const Home = () => {
   //side effect just for checking if we have connection
   useEffect(() => {
     axios
-      .get(
-        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/musicpage",
-        {
-          params: { offset: elementsByPage, page: musicPage },
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-          },
-        }
-      )
+      .get("http://localhost:8080/musicpage", {
+        params: { offset: elementsByPage, page: musicPage },
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
+      })
       .then(() => {
         setIsConnection(true); //checking if connection with server is still okay
       })
@@ -228,15 +217,12 @@ const Home = () => {
       //queryArtists = db.artists.toArray();
       synchronizeArtistsThenMusic(queryArtists);
       axios
-        .get(
-          "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/musicpage",
-          {
-            params: { offset: elementsByPage, page: musicPage },
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-            },
-          }
-        )
+        .get("http://localhost:8080/musicpage", {
+          params: { offset: elementsByPage, page: musicPage },
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        })
         .then((response) => {
           setMusics(response.data);
           setMusicsCount(parseInt(response.headers["allmusiccount"]));
@@ -248,15 +234,12 @@ const Home = () => {
         });
 
       axios
-        .get(
-          "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artistpage",
-          {
-            params: { offset: elementsByPage, page: artistPage },
-            headers: {
-              Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-            },
-          }
-        )
+        .get("http://localhost:8080/artistpage", {
+          params: { offset: elementsByPage, page: artistPage },
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+          },
+        })
         .then((response) => {
           setArtists(response.data);
           setArtistsCount(parseInt(response.headers["allartistcount"]));
@@ -281,15 +264,13 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get(
-        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist/view/count",
-        {
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-          },
-        }
-      )
+      .get("http://localhost:8080/artist/view/count", {
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
+      })
       .then((response) => {
+        console.log(response.data);
         setTrackCountDict(response.data);
       })
       .catch((error) => {
@@ -327,10 +308,14 @@ const Home = () => {
         <div className="ListGroupMusic">
           <h3>Melodies:</h3>
           <div>
-            <NavButton path="/music/add" className="btn btn-primary">
-              Add Music
-            </NavButton>{" "}
-            <br></br>
+            {sessionStorage.getItem("role") !== "USER" && (
+              <>
+                <NavButton path="/music/add" className="btn btn-primary">
+                  Add Music
+                </NavButton>{" "}
+                <br></br>
+              </>
+            )}
             <NavButton path="/diagram" className="btn btn-outline-info">
               Check Rating Stats
             </NavButton>{" "}
@@ -366,11 +351,13 @@ const Home = () => {
         <div className="vertical-line"></div>
         <div className="ListGroupArtist">
           <h3>Artists:</h3>
-          <div>
-            <NavButton path="/artist/add/" className="btn btn-primary">
-              Add Artist
-            </NavButton>{" "}
-          </div>
+          {sessionStorage.getItem("user") === "ADMIN" && (
+            <div>
+              <NavButton path="/artist/add/" className="btn btn-primary">
+                Add Artist
+              </NavButton>{" "}
+            </div>
+          )}
           <ListGroupArtist
             page={artistPage}
             setPage={setArtistPage}

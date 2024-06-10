@@ -17,7 +17,7 @@ const Register = () => {
     };
     axios
       .post(
-        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/auth/register",
+        "http://localhost:8080/auth/register",
         postData
       )
       .then((response) => {

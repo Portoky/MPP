@@ -15,14 +15,24 @@ const Login = () => {
       password: password,
     };
     axios
-      .post(
-        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/auth/authenticate",
-        postData
-      )
+      .post("http://localhost:8080/auth/authenticate", postData)
       .then((response) => {
         console.log("hello");
         const bearerToken = response.data;
+        sessionStorage.setItem("username", username); //save username
         sessionStorage.setItem("bearerToken", bearerToken["token"]); //session management ig
+        //saving the users role
+        axios
+          .get("http://localhost:8080/userrole", {
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+            },
+          })
+          .then((response) => {
+            console.log(response.data);
+            sessionStorage.setItem("role", response.data);
+          });
+
         navigate("/");
       });
   }

@@ -55,8 +55,7 @@ const EditArtist = () => {
       biography: biography,
     };
     const response = await fetch(
-      "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/artist/edit/" +
-        artistId,
+      "http://localhost:8080/artist/edit/" + artistId,
       {
         method: "PUT",
         body: JSON.stringify(postData),

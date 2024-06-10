@@ -48,7 +48,7 @@ public class MusicController {
         try {
             List<MusicDto> result =
                     musicRepository.findAllForPage(currentOffset, pageSize).stream().map(
-                            music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId(), music.getArtist().getName()))
+                            music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(),  music.getArtist() != null ? music.getArtist().getArtistId() : -1, music.getArtist() != null ? music.getArtist().getName() : "Unknown"))
                             .collect(Collectors.toList());
             return ResponseEntity.ok().headers(responseHeaders).body(result);
             }catch (IndexOutOfBoundsException ex){
@@ -60,21 +60,17 @@ public class MusicController {
     @GetMapping("/music")
     List<MusicDto> all(){
         List<MusicDto> result =
-                musicRepository.findAll().stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist().getArtistId(), music.getArtist().getName())
+                musicRepository.findAll().stream().map(music -> new MusicDto(music.getMusicId(), music.getTitle(), music.getRating(), music.getYearOfRelease(), music.getArtist() != null ? music.getArtist().getArtistId() : -1, music.getArtist() != null ? music.getArtist().getName() : "Unknown")
                 ).collect(Collectors.toList());
         return result;
     }
-    @GetMapping("/music/artist/{id}") //returns all the music of an artist --> not all only some of it!
-    @PreAuthorize("hasAnyRole('ADMIN','ARTIST')")
+    @GetMapping("/music/artist/{id}") //returns all the music of an artist paginated --> not all only some of it!
     List<MusicDto> artistMusics(@PathVariable("id") Long id, @RequestParam Integer offset, @RequestParam Integer page){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User userDetails = (User) principal;
         try {
             Optional<Artist> optionalArtist =  artistRepository.findById(id);
             Artist artist = optionalArtist.orElseThrow(IndexOutOfBoundsException::new);
-            if(!artist.getName().equals(userDetails.getUsername()) && userDetails.getRole() != Role.ADMIN){
-                throw  new IndexOutOfBoundsException();
-            }
             int pageSize = offset;
             int currentOffset = offset*(page-1);
             List<MusicDto> result = musicRepository.findAllArtistMusicForPage(currentOffset, pageSize, id).stream().map(

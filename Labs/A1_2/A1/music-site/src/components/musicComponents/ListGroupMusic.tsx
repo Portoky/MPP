@@ -35,8 +35,7 @@ const ListGroupMusic = ({ filter, page }: ListGroupMusicProps) => {
   const deleteFromServerDb = async () => {
     await axios
       .delete(
-        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/music/delete/" +
-          musics[indexToDelete].musicId,
+        "http://localhost:8080/music/delete/" + musics[indexToDelete].musicId,
         {
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
@@ -57,15 +56,12 @@ const ListGroupMusic = ({ filter, page }: ListGroupMusicProps) => {
 
     //we need to refetch the elements so the list is updated
     await axios
-      .get(
-        "https://mpp-marci-spring-app-20240517184709.azuremicroservices.io/musicpage",
-        {
-          params: { offset: elementsByPage, page: page },
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
-          },
-        }
-      )
+      .get("http://localhost:8080/musicpage", {
+        params: { offset: elementsByPage, page: page },
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("bearerToken"),
+        },
+      })
       .then((response) => {
         setMusics(response.data);
       })
@@ -122,22 +118,32 @@ const ListGroupMusic = ({ filter, page }: ListGroupMusicProps) => {
                 return `${music.artistName}: ${music.title} - ${music.yearOfRelease}`;
               })()}
               <br></br>
-              <NavButton /*FOR EDIT*/
-                path={"/music/edit/" + music.musicId}
-                className="btn btn-warning"
-              >
-                Edit music
-              </NavButton>
+              {(sessionStorage.getItem("role") === "ADMIN" ||
+                (sessionStorage.getItem("role") === "ARTIST" &&
+                  sessionStorage.getItem("username") === music.artistName)) && (
+                <>
+                  <NavButton /*FOR EDIT*/
+                    path={"/music/edit/" + music.musicId}
+                    className="btn btn-warning"
+                  >
+                    Edit music
+                  </NavButton>
+                </>
+              )}
               <NavButton /*FOR VIEW*/
                 path={"/music/view/" + music.musicId}
                 className="btn btn-info"
               >
                 View music
               </NavButton>
-              <DeleteButton
-                onClick={() => onDeleteClick(index)}
-                text="Delete Music"
-              ></DeleteButton>
+              {sessionStorage.getItem("role") === "ADMIN" && (
+                <>
+                  <DeleteButton
+                    onClick={() => onDeleteClick(index)}
+                    text="Delete Music"
+                  ></DeleteButton>
+                </>
+              )}
               {
                 //conditional rendering wether we need popup or not
                 indexToDelete === index && (
